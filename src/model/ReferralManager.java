@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReferralManager {
@@ -14,35 +15,38 @@ public class ReferralManager {
     private final ClinicianRepository clinicianRepository;
     private final FacilityRepository facilityRepository;
     private final String referralTextPath;
+    private final User currentUser;  // ADDED: Store current user
 
+    // User parameter
     private ReferralManager(ReferralRepository rr,
                             PatientRepository pr,
                             ClinicianRepository cr,
                             FacilityRepository fr,
-                            String referralTextPath) {
+                            String referralTextPath,
+                            User user) {  // ADDED PARAMETER
 
         this.referralRepository = rr;
         this.patientRepository = pr;
         this.clinicianRepository = cr;
         this.facilityRepository = fr;
         this.referralTextPath = referralTextPath;
+        this.currentUser = user;  // ADDED: Store user
     }
 
-
-    // Singleton access
+    // UPDATED SINGLETON METHOD: Added User parameter
     public static synchronized ReferralManager getInstance(
             ReferralRepository rr,
             PatientRepository pr,
             ClinicianRepository cr,
             FacilityRepository fr,
-            String referralTextPath) {
+            String referralTextPath,
+            User user) {  // ADDED PARAMETER
 
         if (instance == null) {
-            instance = new ReferralManager(rr, pr, cr, fr, referralTextPath);
+            instance = new ReferralManager(rr, pr, cr, fr, referralTextPath, user);
         }
         return instance;
     }
-
 
     public void createReferral(Referral r) {
         referralRepository.addAndAppend(r);
@@ -52,11 +56,21 @@ public class ReferralManager {
     public List<Referral> getAllReferrals() {
         return referralRepository.getAll();
     }
-
+    // ============================================================
+    // FILTERING METHOD FOR PATIENTS
+    // ============================================================
+    public List<Referral> getReferralsByPatientId(String patientId) {
+        List<Referral> filtered = new ArrayList<>();
+        for (Referral r : referralRepository.getAll()) {
+            if (r.getPatientId().equals(patientId)) {
+                filtered.add(r);
+            }
+        }
+        return filtered;
+    }
 
     /**
-     * Writes a nicely formatted referral text file showing full details.
-     * This is what gets you marks under “output text file of referral content”.
+     *Referral text file showing full details.
      */
     private void writeReferralText(Referral r) {
 
@@ -78,30 +92,23 @@ public class ReferralManager {
             bw.write("Referral ID: " + r.getId());
             bw.newLine();
 
-            // Patient details
-            if (patient != null) {
-                bw.write("Patient: " + patient.getName() + " (NHS: " + patient.getNhsNumber() + ")");
+            // Referring Clinician
+            if (referringClinician != null) {
+                bw.write("Referring Clinician: " 
+                    + referringClinician.getFullName()
+                    + " (" + referringClinician.getTitle()
+                    + " - " + referringClinician.getSpeciality() + ")");
                 bw.newLine();
             }
 
-           // Referring Clinician
-if (referringClinician != null) {
-    bw.write("Referring Clinician: " 
-        + referringClinician.getFullName()
-        + " (" + referringClinician.getTitle()
-        + " - " + referringClinician.getSpeciality() + ")");
-    bw.newLine();
-}
-
-// Referred-To Clinician
-if (referredToClinician != null) {
-    bw.write("Referred To: " 
-        + referredToClinician.getFullName()
-        + " (" + referredToClinician.getTitle()
-        + " - " + referredToClinician.getSpeciality() + ")");
-    bw.newLine();
-}
-
+            // Referred-To Clinician
+            if (referredToClinician != null) {
+                bw.write("Referred To: " 
+                    + referredToClinician.getFullName()
+                    + " (" + referredToClinician.getTitle()
+                    + " - " + referredToClinician.getSpeciality() + ")");
+                bw.newLine();
+            }
 
             // Facilities
             if (referringFacility != null) {

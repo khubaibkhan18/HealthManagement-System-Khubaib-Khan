@@ -148,4 +148,27 @@ public class PrescriptionRepository {
         prescriptions.removeIf(p -> p.getId().equals(id));
         // No CSV rewrite—acceptable for coursework
     }
+    
+    // ============================================================
+    // FILTERING METHODS FOR ROLE-BASED ACCESS
+    // ============================================================
+    public List<Prescription> getPrescriptionsByPatientId(String patientId) {
+        List<Prescription> filtered = new ArrayList<>();
+        for (Prescription p : prescriptions) {
+            if (p.getPatientId().equals(patientId)) {
+                filtered.add(p);
+            }
+        }
+        return filtered;
+    }
+    
+    public List<Prescription> getPrescriptionsByClinicianId(String clinicianId) {
+        List<Prescription> filtered = new ArrayList<>();
+        for (Prescription p : prescriptions) {
+            if (p.getClinicianId().equals(clinicianId)) {
+                filtered.add(p);
+            }
+        }
+        return filtered;
+    }
 }

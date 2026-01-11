@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import view.*;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,19 +13,22 @@ public class AppointmentController {
     private final ClinicianRepository clinicianRepo;
     private final FacilityRepository facilityRepo;
     private final AppointmentView view;
+    private final User currentUser;  // ADDED FIELD
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public AppointmentController(AppointmentRepository repo,
                                  PatientRepository patientRepo,
                                  ClinicianRepository clinicianRepo,
                                  FacilityRepository facilityRepo,
-                                 AppointmentView view) {
+                                 AppointmentView view,
+                                 User user) {  // ADDED PARAMETER
 
         this.repo = repo;
         this.patientRepo = patientRepo;
         this.clinicianRepo = clinicianRepo;
         this.facilityRepo = facilityRepo;
         this.view = view;
+        this.currentUser = user;  // ADDED: Store user
 
         view.setController(this);
         refreshAppointments();
@@ -68,4 +70,3 @@ public class AppointmentController {
         refreshAppointments();
     }
 }
-

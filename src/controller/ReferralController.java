@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import view.ReferralView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +13,15 @@ public class ReferralController {
     private final FacilityRepository facilityRepo;
     private final AppointmentRepository appointmentRepo;
     private final ReferralView view;
+    private final User currentUser;  // ADDED FIELD
 
     public ReferralController(ReferralManager rm,
                               PatientRepository pr,
                               ClinicianRepository cr,
                               FacilityRepository fr,
                               AppointmentRepository ar,
-                              ReferralView view) {
+                              ReferralView view,
+                              User user) {  // ADDED PARAMETER
 
         this.referralManager = rm;
         this.patientRepo = pr;
@@ -28,6 +29,7 @@ public class ReferralController {
         this.facilityRepo = fr;
         this.appointmentRepo = ar;
         this.view = view;
+        this.currentUser = user;  // ADDED: Store user
 
         // hook controller into view
         this.view.setController(this);

@@ -107,4 +107,27 @@ public class AppointmentRepository {
             if (a.getId().equals(id)) return a;
         return null;
     }
+    
+    // ============================================================
+    // FILTERING METHODS FOR ROLE-BASED ACCESS
+    // ============================================================
+    public List<Appointment> getAppointmentsByPatientId(String patientId) {
+        List<Appointment> filtered = new ArrayList<>();
+        for (Appointment a : appointments) {
+            if (a.getPatientId().equals(patientId)) {
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
+    
+    public List<Appointment> getAppointmentsByClinicianId(String clinicianId) {
+        List<Appointment> filtered = new ArrayList<>();
+        for (Appointment a : appointments) {
+            if (a.getClinicianId().equals(clinicianId)) {
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
 }

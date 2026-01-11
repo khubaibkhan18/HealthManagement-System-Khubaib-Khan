@@ -46,11 +46,9 @@ public class ReferralRepository {
         }
     }
 
-
     public List<Referral> getAll() {
         return referrals;
     }
-
 
     /**
      * Add referral and append to CSV (ALL 16 COLUMNS)
@@ -81,5 +79,18 @@ public class ReferralRepository {
         } catch (IOException ex) {
             System.err.println("Failed to append referral: " + ex.getMessage());
         }
+    }
+    
+    // ============================================================
+    // FILTERING METHODS FOR ROLE-BASED ACCESS
+    // ============================================================
+    public List<Referral> getReferralsByPatientId(String patientId) {
+        List<Referral> filtered = new ArrayList<>();
+        for (Referral r : referrals) {
+            if (r.getPatientId().equals(patientId)) {
+                filtered.add(r);
+            }
+        }
+        return filtered;
     }
 }

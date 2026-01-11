@@ -114,4 +114,17 @@ public class PatientRepository {
         }
         return null;
     }
+
+    // ============================================================
+    // FILTERING METHOD FOR PATIENTS
+    // ============================================================
+    public List<Patient> getPatientsById(String patientId) {
+        List<Patient> filtered = new ArrayList<>();
+        for (Patient p : patients) {
+            if (p.getId().equals(patientId)) {
+                filtered.add(p);
+            }
+        }
+        return filtered;
+    }
 }

@@ -8,8 +8,8 @@ import model.AppointmentRepository;
 import model.Patient;
 import model.Clinician;
 import model.Appointment;
+import model.User;  // ADDED IMPORT
 import view.PrescriptionView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,18 +20,21 @@ public class PrescriptionController {
     private final ClinicianRepository clinicianRepository;
     private final AppointmentRepository appointmentRepository;
     private final PrescriptionView view;
+    private final User currentUser;  // ADDED FIELD
 
     public PrescriptionController(PrescriptionRepository repository,
                                   PatientRepository patientRepository,
                                   ClinicianRepository clinicianRepository,
                                   AppointmentRepository appointmentRepository,
-                                  PrescriptionView view) {
+                                  PrescriptionView view,
+                                  User user) {  // ADDED PARAMETER
 
         this.repository = repository;
         this.patientRepository = patientRepository;
         this.clinicianRepository = clinicianRepository;
         this.appointmentRepository = appointmentRepository;
         this.view = view;
+        this.currentUser = user;  // ADDED: Store user
 
         view.setController(this);
 
@@ -82,7 +85,6 @@ public class PrescriptionController {
     }
 
     // ---------- CRUD called by view ----------
-
     public void addPrescription(Prescription p) {
         repository.addAndAppend(p);
         refreshView();
