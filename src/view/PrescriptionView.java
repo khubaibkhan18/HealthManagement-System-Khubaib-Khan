@@ -23,8 +23,8 @@ public class PrescriptionView extends JPanel {
     private JComboBox<String> cbClinicianId;
     private JComboBox<String> cbDrug;
     private JComboBox<String> cbPharmacy;
-    private JComboBox<String> cbStatus;         // 🔥 STATUS DROPDOWN
-    private JComboBox<String> cbAppointmentId;  // 🔥 APPOINTMENT DROPDOWN
+    private JComboBox<String> cbStatus;
+    private JComboBox<String> cbAppointmentId;
 
     private JTextField txtPrescDate;
     private JTextField txtDosage;
@@ -35,6 +35,10 @@ public class PrescriptionView extends JPanel {
     private JTextField txtCollectionDate;
 
     private JTextArea txtInstructions;
+
+    private JButton btnAdd;
+    private JButton btnUpdate;
+    private JButton btnDelete;
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private final SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN);
@@ -134,9 +138,9 @@ public class PrescriptionView extends JPanel {
         // ============================================================
         // BUTTONS
         // ============================================================
-        JButton btnAdd    = new JButton("Add");
-        JButton btnUpdate = new JButton("Update Selected");
-        JButton btnDelete = new JButton("Delete Selected");
+        btnAdd = new JButton("Add");
+        btnUpdate = new JButton("Update Selected");
+        btnDelete = new JButton("Delete Selected");
 
         btnAdd.addActionListener(e -> onAdd());
         btnUpdate.addActionListener(e -> onUpdate());
@@ -172,10 +176,44 @@ public class PrescriptionView extends JPanel {
     }
 
     // ============================================================
+    // DISABLE EDITING FOR PATIENTS
+    // ============================================================
+    private void disableEditingForPatient() {
+        // Hide all buttons for patients
+        btnAdd.setVisible(false);
+        btnUpdate.setVisible(false);
+        btnDelete.setVisible(false);
+        
+        // Disable all form fields for patients
+        cbPatientId.setEnabled(false);
+        cbClinicianId.setEnabled(false);
+        cbDrug.setEnabled(false);
+        cbPharmacy.setEnabled(false);
+        cbStatus.setEnabled(false);
+        cbAppointmentId.setEnabled(false);
+        
+        txtPrescDate.setEditable(false);
+        txtDosage.setEditable(false);
+        txtFrequency.setEditable(false);
+        txtDuration.setEditable(false);
+        txtQuantity.setEditable(false);
+        txtIssueDate.setEditable(false);
+        txtCollectionDate.setEditable(false);
+        txtInstructions.setEditable(false);
+        
+        // Hide the ID label since patients can't add
+        lblId.setVisible(false);
+    }
+
+    // ============================================================
     // Controller Hooks
     // ============================================================
     public void setController(PrescriptionController controller) {
         this.controller = controller;
+        // Check if user is patient and disable editing
+        if (controller != null && controller.getCurrentUser().getRole().equals("patient")) {
+            disableEditingForPatient();
+        }
     }
 
     public void populateDropdowns(List<String> patientIds,
@@ -293,7 +331,7 @@ public class PrescriptionView extends JPanel {
                 id,
                 (String) cbPatientId.getSelectedItem(),
                 (String) cbClinicianId.getSelectedItem(),
-                (String) cbAppointmentId.getSelectedItem(),   // 🔥 from dropdown
+                (String) cbAppointmentId.getSelectedItem(),
                 txtPrescDate.getText().trim(),
                 (String) cbDrug.getSelectedItem(),
                 txtDosage.getText().trim(),

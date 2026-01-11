@@ -39,7 +39,6 @@ public class MainFrame extends JFrame {
             // Patient can: manage appointments, view prescriptions
             tabs.addTab("My Appointments", ac.getView());
             tabs.addTab("My Prescriptions", prc.getView());
-            tabs.addTab("My Referrals", rc.getView());
             tabs.addTab("My Profile", pc.getView());
             
         } else if (role.equals("gp") || role.equals("specialist")) {

@@ -22,6 +22,10 @@ public class PatientView extends JPanel {
     private JTextField txtAddress, txtPostcode;
     private JTextField txtEmergencyName, txtEmergencyPhone;
     private JTextField txtRegistrationDate, txtGpSurgery;
+    
+    // Button references
+    private JButton btnAdd;
+    private JButton btnDelete;
 
     public PatientView() {
 
@@ -91,8 +95,8 @@ public class PatientView extends JPanel {
         // ============================================================
         // BUTTONS (TOP)
         // ============================================================
-        JButton btnAdd = new JButton("Add Patient");
-        JButton btnDelete = new JButton("Delete Selected");
+        btnAdd = new JButton("Add Patient");
+        btnDelete = new JButton("Delete Selected");
 
         btnAdd.addActionListener(e -> onAdd());
         btnDelete.addActionListener(e -> onDelete());
@@ -131,10 +135,41 @@ public class PatientView extends JPanel {
     }
 
     // ============================================================
+    // DISABLE EDITING FOR PATIENTS
+    // ============================================================
+    private void disableEditingForPatient() {
+        // Hide all buttons for patients
+        btnAdd.setVisible(false);
+        btnDelete.setVisible(false);
+        
+        // Disable all form fields for patients (make read-only)
+        txtFirstName.setEditable(false);
+        txtLastName.setEditable(false);
+        txtDob.setEditable(false);
+        txtNhs.setEditable(false);
+        txtGender.setEditable(false);
+        txtPhone.setEditable(false);
+        txtEmail.setEditable(false);
+        txtAddress.setEditable(false);
+        txtPostcode.setEditable(false);
+        txtEmergencyName.setEditable(false);
+        txtEmergencyPhone.setEditable(false);
+        txtRegistrationDate.setEditable(false);
+        txtGpSurgery.setEditable(false);
+        
+        // Hide the auto-ID label since patients can't add
+        lblAutoId.setVisible(false);
+    }
+
+    // ============================================================
     // CONTROLLER LINK
     // ============================================================
     public void setController(PatientController controller) {
         this.controller = controller;
+        // Check if user is patient and disable editing
+        if (controller != null && controller.getCurrentUser().getRole().equals("patient")) {
+            disableEditingForPatient();
+        }
     }
 
     // ============================================================
@@ -142,8 +177,6 @@ public class PatientView extends JPanel {
     // ============================================================
     public void showPatients(List<Patient> list) {
         tableModel.setRowCount(0);
-
-        updateAutoId(list);
 
         for (Patient p : list) {
             tableModel.addRow(new Object[]{
@@ -155,20 +188,6 @@ public class PatientView extends JPanel {
                     p.getGpSurgeryId()
             });
         }
-    }
-
-    // ============================================================
-    // AUTO-ID P001 → P002
-    // ============================================================
-    private void updateAutoId(List<Patient> list) {
-        if (list.isEmpty()) {
-            lblAutoId.setText("P001");
-            return;
-        }
-
-        String lastId = list.get(list.size() - 1).getId();
-        int num = Integer.parseInt(lastId.substring(1)) + 1;
-        lblAutoId.setText(String.format("P%03d", num));
     }
 
     // ============================================================
