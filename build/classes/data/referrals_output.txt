@@ -1,6 +1,169 @@
 ==============================================
             REFERRAL SUMMARY REPORT           
 ==============================================
+
+Referral ID: R001
+Referring Clinician: Dr. David Thompson GP (Dr. David - General Practice)
+Referred To: Dr. Richard Evans Consultant (Dr. Richard - Cardiology)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-10
+Urgency Level: Routine
+Reason for Referral: Heart murmur investigation
+Requested Service: Echocardiogram|ECG
+Status: Pending
+Clinical Summary:
+35-year-old male with Grade 2/6 systolic murmur detected during routine examination. No symptoms of chest pain or breathlessness.
+Notes:
+Patient seen
+Created Date: echo normal
+Last Updated: 2025-09-10
+----------------------------------------------
+
+Referral ID: R003
+Referring Clinician: Dr. Mark Davies GP (Dr. Mark - General Practice)
+Referred To: Dr. Paul Harris Consultant (Dr. Paul - Gastroenterology)
+Referring Facility: Solihull Family Practice (GP Surgery)
+Referred To Facility: Queen Elizabeth Hospital (Hospital)
+Referral Date: 2025-09-18
+Urgency Level: Routine
+Reason for Referral: Chronic abdominal pain
+Requested Service: Upper GI Endoscopy|CT Abdomen
+Status: Pending
+Clinical Summary:
+48-year-old male with 6-month history of epigastric pain and weight loss. Normal blood tests but symptoms persisting.
+Notes:
+Patient anxious about procedure
+Created Date: 2025-09-18
+Last Updated: 2025-09-18
+----------------------------------------------
+
+Referral ID: R004
+Referring Clinician: Dr. Susan Clarke GP (Dr. Susan - General Practice)
+Referred To: Dr. Andrew White Consultant (Dr. Andrew - Orthopaedics)
+Referring Facility: Sutton Coldfield Medical Centre (GP Surgery)
+Referred To Facility: Queen Elizabeth Hospital (Hospital)
+Referral Date: 2025-09-11
+Urgency Level: Routine
+Reason for Referral: Chronic knee pain
+Requested Service: MRI Knee|Orthopaedic assessment
+Status: In Progress
+Clinical Summary:
+44-year-old male with 2-year history of right knee pain affecting mobility. X-ray shows mild degenerative changes.
+Notes:
+Physiotherapy commenced
+Created Date: 2025-09-11
+Last Updated: 2025-09-27
+----------------------------------------------
+
+Referral ID: R005
+Referring Clinician: Dr. Helen Roberts GP (Dr. Helen - General Practice)
+Referred To: Dr. Jennifer Lee Consultant (Dr. Jennifer - Dermatology)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Birmingham Children's Hospital (Hospital)
+Referral Date: 2025-09-15
+Urgency Level: Non-urgent
+Reason for Referral: Suspicious skin lesion
+Requested Service: Dermatoscopy|Possible biopsy
+Status: Pending
+Clinical Summary:
+33-year-old male with changing mole on back. No family history of melanoma but lesion has irregular borders.
+Notes:
+Routine 2-week wait referral
+Created Date: 2025-09-15
+Last Updated: 2025-09-15
+----------------------------------------------
+
+Referral ID: R006
+Referring Clinician: Dr. Helen Roberts GP (Dr. Helen - General Practice)
+Referred To: Dr. Richard Evans Consultant (Dr. Richard - Cardiology)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-22
+Urgency Level: Urgent
+Reason for Referral: Chest pain episodes
+Requested Service: Exercise Stress Test|Cardiac enzymes
+Status: New
+Clinical Summary:
+37-year-old female with recent onset chest pain and family history of cardiac disease. ECG shows minor T-wave changes.
+Notes:
+Fast-track cardiology referral
+Created Date: 2025-09-22
+Last Updated: 2025-09-22
+----------------------------------------------
+
+Referral ID: R007
+Referring Clinician: Nurse Jane Phillips Practice Nurse (Nurse Jane - Practice Nursing)
+Referred To: Dr. Jennifer Lee Consultant (Dr. Jennifer - Dermatology)
+Referring Facility: Solihull Family Practice (GP Surgery)
+Referred To Facility: Birmingham Children's Hospital (Hospital)
+Referral Date: 2025-09-20
+Urgency Level: Routine
+Reason for Referral: Chronic eczema
+Requested Service: Patch testing|Specialist dermatology review
+Status: New
+Clinical Summary:
+42-year-old female with severe atopic eczema not responding to standard treatments. Affects quality of life significantly.
+Notes:
+Considering immunosuppressive therapy
+Created Date: 2025-09-20
+Last Updated: 2025-09-20
+----------------------------------------------
+
+Referral ID: R008
+Referring Clinician: Sister Mary Kelly Senior Nurse (Sister Mary - General Nursing)
+Referred To: Nurse Robert Green Staff Nurse (Nurse Robert - General Nursing)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-14
+Urgency Level: Non-urgent
+Reason for Referral: Post-vaccination care
+Requested Service: Allergy assessment|Immunization review
+Status: Completed
+Clinical Summary:
+35-year-old female requiring follow-up after adverse reaction to vaccination. Mild allergic response managed successfully.
+Notes:
+Standard protocol followed
+Created Date: 2025-09-14
+Last Updated: 2025-09-20
+----------------------------------------------
+
+Referral ID: R009
+Referring Clinician: Dr. Helen Roberts GP (Dr. Helen - General Practice)
+Referred To: Dr. Richard Evans Consultant (Dr. Richard - Cardiology)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-13
+Urgency Level: Routine
+Reason for Referral: Diabetes complications screening
+Requested Service: Diabetic retinal screening|Cardiovascular assessment
+Status: Pending
+Clinical Summary:
+38-year-old female with Type 2 diabetes requiring annual cardiovascular risk assessment. HbA1c slightly elevated.
+Notes:
+Annual diabetes review referral
+Created Date: 2025-09-13
+Last Updated: 2025-09-13
+----------------------------------------------
+
+Referral ID: R010
+Referring Clinician: Dr. Susan Clarke GP (Dr. Susan - General Practice)
+Referred To: Dr. Maria Rodriguez Consultant (Dr. Maria - Neurology)
+Referring Facility: Sutton Coldfield Medical Centre (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-12
+Urgency Level: Urgent
+Reason for Referral: Memory problems
+Requested Service: Cognitive assessment|MRI Brain
+Status: Pending
+Clinical Summary:
+47-year-old female reporting significant memory issues and confusion. Family concerned about early onset dementia.
+Notes:
+Early intervention referral requested
+Created Date: 2025-09-12
+Last Updated: 2025-09-12
+----------------------------------------------
+
 Referral ID: R011
 Referring Clinician: Dr. Mark Davies GP (Dr. Mark - General Practice)
 Referred To: Dr. Susan Clarke GP (Dr. Susan - General Practice)
@@ -19,9 +182,6 @@ Created Date: 23/11/2025
 Last Updated: 23/11/2025
 ----------------------------------------------
 
-==============================================
-            REFERRAL SUMMARY REPORT           
-==============================================
 Referral ID: R012
 Referring Clinician: Dr. David Thompson GP (Dr. David - General Practice)
 Referred To: Dr. David Thompson GP (Dr. David - General Practice)

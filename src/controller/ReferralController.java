@@ -158,4 +158,66 @@ public class ReferralController {
         referralManager.createReferral(r);
         refreshReferrals();
     }
+
+    // ============================================================
+    // UPDATE REFERRAL
+    // ============================================================
+    public void updateReferral(Referral updatedReferral) {
+        String role = currentUser.getRole();
+        String userId = currentUser.getId();
+        
+        // Check permissions
+        if (role.equals("patient")) {
+            return; // Patients cannot update referrals
+        }
+        
+        if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
+            // Clinicians can only update referrals they created
+            if (!updatedReferral.getReferringClinicianId().equals(userId)) {
+                return; // Not their referral
+            }
+        }
+        
+        // Update the referral using ReferralManager
+        referralManager.updateReferral(updatedReferral);
+        refreshReferrals();
+    }
+
+    // ============================================================
+    // DELETE REFERRAL
+    // ============================================================
+    public void deleteReferral(String referralId) {
+        String role = currentUser.getRole();
+        String userId = currentUser.getId();
+        
+        // Find the referral first to check permissions
+        // We need to get it from ReferralManager
+        Referral referralToDelete = null;
+        for (Referral r : referralManager.getAllReferrals()) {
+            if (r.getId().equals(referralId)) {
+                referralToDelete = r;
+                break;
+            }
+        }
+        
+        if (referralToDelete == null) {
+            return; // Referral not found
+        }
+        
+        // Check permissions
+        if (role.equals("patient")) {
+            return; // Patients cannot delete referrals
+        }
+        
+        if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
+            // Clinicians can only delete referrals they created
+            if (!referralToDelete.getReferringClinicianId().equals(userId)) {
+                return; // Not their referral
+            }
+        }
+        
+        // Delete the referral using ReferralManager
+        referralManager.deleteReferral(referralId);
+        refreshReferrals();
+    }
 }

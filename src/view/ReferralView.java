@@ -35,6 +35,11 @@ public class ReferralView extends JPanel {
     private JComboBox<String> cbAppointmentId;
     private JComboBox<String> cbStatus;
 
+    // Button references
+    private JButton btnAdd;
+    private JButton btnUpdate;
+    private JButton btnDelete;
+
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private final DateTimeFormatter localDateFormatter =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -76,6 +81,10 @@ public class ReferralView extends JPanel {
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 loadSelectedReferralIntoForm();
+                // Enable update and delete buttons when a row is selected
+                boolean hasSelection = table.getSelectedRow() >= 0;
+                btnUpdate.setEnabled(hasSelection);
+                btnDelete.setEnabled(hasSelection);
             }
         });
 
@@ -155,14 +164,28 @@ public class ReferralView extends JPanel {
         add(new JScrollPane(formPanel), BorderLayout.CENTER);
 
         // ============================================================
-        // BUTTON PANEL
+        // BUTTON PANEL - UPDATED WITH ALL BUTTONS
         // ============================================================
-        JButton btnAdd = new JButton("Create Referral");
-        btnAdd.setPreferredSize(new Dimension(160, 30));
+        btnAdd = new JButton("Create Referral");
+        btnUpdate = new JButton("Update Selected");
+        btnDelete = new JButton("Delete Selected");
+        
+        btnAdd.setPreferredSize(new Dimension(140, 30));
+        btnUpdate.setPreferredSize(new Dimension(140, 30));
+        btnDelete.setPreferredSize(new Dimension(140, 30));
+        
         btnAdd.addActionListener(e -> onAdd());
+        btnUpdate.addActionListener(e -> onUpdate());
+        btnDelete.addActionListener(e -> onDelete());
+        
+        // Disable update and delete initially (no selection)
+        btnUpdate.setEnabled(false);
+        btnDelete.setEnabled(false);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(btnAdd);
+        buttonPanel.add(btnUpdate);
+        buttonPanel.add(btnDelete);
 
         add(buttonPanel, BorderLayout.WEST);
     }
@@ -235,6 +258,9 @@ public class ReferralView extends JPanel {
         txtNotes.setText(getTableValue(selectedRow, 13));
         txtCreatedDate.setText(getTableValue(selectedRow, 14));
         txtLastUpdated.setText(getTableValue(selectedRow, 15));
+        
+        // Make ID editable for updates
+        txtId.setEditable(true);
     }
     
     private String getTableValue(int row, int column) {
@@ -261,6 +287,16 @@ public class ReferralView extends JPanel {
     // ============================================================
     public void setController(ReferralController controller) {
         this.controller = controller;
+        if (controller != null) {
+            String role = controller.getCurrentUser().getRole();
+            
+            // Patients cannot add, update, or delete referrals
+            if (role.equals("patient")) {
+                btnAdd.setEnabled(false);
+                btnUpdate.setEnabled(false);
+                btnDelete.setEnabled(false);
+            }
+        }
         loadCombos();
         refreshAutoId();
         refreshDates();
@@ -373,7 +409,127 @@ public class ReferralView extends JPanel {
 
         refreshAutoId();
         refreshDates();
-        clearFormButKeepIds();
+        clearForm();
+    }
+
+    // ============================================================
+    // UPDATE REFERRAL
+    // ============================================================
+    private void onUpdate() {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a referral to update.");
+            return;
+        }
+
+        String referralId = txtId.getText().trim();
+        if (referralId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Referral ID is required.");
+            return;
+        }
+
+        String errors = validateForm();
+        if (!errors.isEmpty()) {
+            JOptionPane.showMessageDialog(this, errors,
+                    "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Confirm update
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Update referral " + referralId + "?",
+                "Confirm Update",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            Referral updatedReferral = new Referral(
+                    referralId,
+                    (String) cbPatientId.getSelectedItem(),
+                    (String) cbRefClin.getSelectedItem(),
+                    (String) cbToClin.getSelectedItem(),
+                    (String) cbRefFacility.getSelectedItem(),
+                    (String) cbToFacility.getSelectedItem(),
+                    txtReferralDate.getText().trim(),
+                    (String) cbUrgency.getSelectedItem(),
+                    txtReason.getText().trim(),
+                    txtClinicalSummary.getText().trim(),
+                    txtRequestedService.getText().trim(),
+                    (String) cbStatus.getSelectedItem(),
+                    (String) cbAppointmentId.getSelectedItem(),
+                    txtNotes.getText().trim(),
+                    txtCreatedDate.getText().trim(),
+                    LocalDate.now().format(localDateFormatter)
+            );
+
+            controller.updateReferral(updatedReferral);
+            
+            JOptionPane.showMessageDialog(this,
+                    "Referral " + referralId + " updated successfully.");
+            
+            // Clear form for next action
+            clearForm();
+        }
+    }
+
+    // ============================================================
+    // DELETE REFERRAL
+    // ============================================================
+    private void onDelete() {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Select a referral to delete.");
+            return;
+        }
+
+        String referralId = model.getValueAt(row, 0).toString();
+        String patientName = model.getValueAt(row, 1).toString();
+        String reason = model.getValueAt(row, 8).toString();
+
+        // Confirm deletion
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Delete referral " + referralId + "?\n" +
+                "Patient: " + patientName + "\n" +
+                "Reason: " + reason,
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            controller.deleteReferral(referralId);
+            
+            JOptionPane.showMessageDialog(this,
+                    "Referral " + referralId + " deleted successfully.");
+            
+            // Clear form after deletion
+            clearForm();
+            // Disable update/delete buttons since no row is selected
+            btnUpdate.setEnabled(false);
+            btnDelete.setEnabled(false);
+        }
+    }
+
+    // ============================================================
+    // CLEAR FORM
+    // ============================================================
+    private void clearForm() {
+        refreshAutoId();
+        refreshDates();
+        
+        // Clear other fields
+        txtReason.setText("");
+        txtClinicalSummary.setText("");
+        txtRequestedService.setText("");
+        txtNotes.setText("");
+        
+        // Reset dropdowns to default values
+        if (cbPatientId.getItemCount() > 0) cbPatientId.setSelectedIndex(0);
+        if (cbRefClin.getItemCount() > 0) cbRefClin.setSelectedIndex(0);
+        if (cbToClin.getItemCount() > 0) cbToClin.setSelectedIndex(0);
+        if (cbRefFacility.getItemCount() > 0) cbRefFacility.setSelectedIndex(0);
+        if (cbToFacility.getItemCount() > 0) cbToFacility.setSelectedIndex(0);
+        if (cbUrgency.getItemCount() > 0) cbUrgency.setSelectedIndex(0);
+        if (cbStatus.getItemCount() > 0) cbStatus.setSelectedIndex(0);
+        if (cbAppointmentId.getItemCount() > 0) cbAppointmentId.setSelectedIndex(0);
     }
 
     private String validateForm() {
@@ -404,12 +560,5 @@ public class ReferralView extends JPanel {
             sb.append("- Clinical summary required\n");
 
         return sb.toString();
-    }
-
-    private void clearFormButKeepIds() {
-        txtReason.setText("");
-        txtClinicalSummary.setText("");
-        txtRequestedService.setText("");
-        txtNotes.setText("");
     }
 }

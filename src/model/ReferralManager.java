@@ -15,32 +15,30 @@ public class ReferralManager {
     private final ClinicianRepository clinicianRepository;
     private final FacilityRepository facilityRepository;
     private final String referralTextPath;
-    private final User currentUser;  // ADDED: Store current user
+    private final User currentUser;
 
-    // User parameter
     private ReferralManager(ReferralRepository rr,
                             PatientRepository pr,
                             ClinicianRepository cr,
                             FacilityRepository fr,
                             String referralTextPath,
-                            User user) {  // ADDED PARAMETER
+                            User user) {
 
         this.referralRepository = rr;
         this.patientRepository = pr;
         this.clinicianRepository = cr;
         this.facilityRepository = fr;
         this.referralTextPath = referralTextPath;
-        this.currentUser = user;  // ADDED: Store user
+        this.currentUser = user;
     }
 
-    // UPDATED SINGLETON METHOD: Added User parameter
     public static synchronized ReferralManager getInstance(
             ReferralRepository rr,
             PatientRepository pr,
             ClinicianRepository cr,
             FacilityRepository fr,
             String referralTextPath,
-            User user) {  // ADDED PARAMETER
+            User user) {
 
         if (instance == null) {
             instance = new ReferralManager(rr, pr, cr, fr, referralTextPath, user);
@@ -56,6 +54,7 @@ public class ReferralManager {
     public List<Referral> getAllReferrals() {
         return referralRepository.getAll();
     }
+
     // ============================================================
     // FILTERING METHOD FOR PATIENTS
     // ============================================================
@@ -69,11 +68,32 @@ public class ReferralManager {
         return filtered;
     }
 
+    // ============================================================
+    // DELETE REFERRAL
+    // ============================================================
+    public void deleteReferral(String referralId) {
+        // Remove from repository
+        referralRepository.deleteById(referralId);
+        
+        // Update the text file
+        rewriteTextFile();
+    }
+    
+    // ============================================================
+    // UPDATE REFERRAL
+    // ============================================================
+    public void updateReferral(Referral updatedReferral) {
+        // Update in repository
+        referralRepository.update(updatedReferral);
+        
+        // Update the text file
+        rewriteTextFile();
+    }
+
     /**
-     *Referral text file showing full details.
+     * Write referral to text file showing full details.
      */
     private void writeReferralText(Referral r) {
-
         Patient patient = patientRepository.findById(r.getPatientId());
         Clinician referringClinician = clinicianRepository.findById(r.getReferringClinicianId());
         Clinician referredToClinician = clinicianRepository.findById(r.getReferredToClinicianId());
@@ -164,5 +184,72 @@ public class ReferralManager {
         } catch (IOException ex) {
             System.err.println("Failed to write referral text: " + ex.getMessage());
         }
+    }
+    
+    // ============================================================
+    // HELPER METHOD TO REWRITE TEXT FILE
+    // ============================================================
+    private void rewriteTextFile() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(referralTextPath, false))) {
+            // Write header
+            bw.write("==============================================\n");
+            bw.write("            REFERRAL SUMMARY REPORT           \n");
+            bw.write("==============================================\n\n");
+            
+            // Write all current referrals
+            for (Referral r : referralRepository.getAll()) {
+                writeReferralToFile(bw, r);
+            }
+            
+        } catch (IOException ex) {
+            System.err.println("Failed to rewrite referral text file: " + ex.getMessage());
+        }
+    }
+    
+    private void writeReferralToFile(BufferedWriter bw, Referral r) throws IOException {
+        Patient patient = patientRepository.findById(r.getPatientId());
+        Clinician referringClinician = clinicianRepository.findById(r.getReferringClinicianId());
+        Clinician referredToClinician = clinicianRepository.findById(r.getReferredToClinicianId());
+        Facility referringFacility = facilityRepository.findById(r.getReferringFacilityId());
+        Facility referredToFacility = facilityRepository.findById(r.getReferredToFacilityId());
+
+        bw.write("Referral ID: " + r.getId() + "\n");
+
+        if (referringClinician != null) {
+            bw.write("Referring Clinician: " 
+                + referringClinician.getFullName()
+                + " (" + referringClinician.getTitle()
+                + " - " + referringClinician.getSpeciality() + ")\n");
+        }
+
+        if (referredToClinician != null) {
+            bw.write("Referred To: " 
+                + referredToClinician.getFullName()
+                + " (" + referredToClinician.getTitle()
+                + " - " + referredToClinician.getSpeciality() + ")\n");
+        }
+
+        if (referringFacility != null) {
+            bw.write("Referring Facility: " + referringFacility.getName() +
+                     " (" + referringFacility.getType() + ")\n");
+        }
+
+        if (referredToFacility != null) {
+            bw.write("Referred To Facility: " + referredToFacility.getName() +
+                     " (" + referredToFacility.getType() + ")\n");
+        }
+
+        bw.write("Referral Date: " + r.getReferralDate() + "\n");
+        bw.write("Urgency Level: " + r.getUrgencyLevel() + "\n");
+        bw.write("Reason for Referral: " + r.getReferralReason() + "\n");
+        bw.write("Requested Service: " + r.getRequestedService() + "\n");
+        bw.write("Status: " + r.getStatus() + "\n");
+        bw.write("Clinical Summary:\n");
+        bw.write(r.getClinicalSummary() + "\n");
+        bw.write("Notes:\n");
+        bw.write(r.getNotes() + "\n");
+        bw.write("Created Date: " + r.getCreatedDate() + "\n");
+        bw.write("Last Updated: " + r.getLastUpdated() + "\n");
+        bw.write("----------------------------------------------\n\n");
     }
 }
