@@ -93,4 +93,89 @@ public class ReferralRepository {
         }
         return filtered;
     }
+
+    // ============================================================
+    // UPDATE REFERRAL
+    // ============================================================
+    public void update(Referral updatedReferral) {
+        for (int i = 0; i < referrals.size(); i++) {
+            if (referrals.get(i).getId().equals(updatedReferral.getId())) {
+                referrals.set(i, updatedReferral);
+                // Also update the CSV file
+                updateCsvFile();
+                return;
+            }
+        }
+        // If referral not found, add it as new
+        addAndAppend(updatedReferral);
+    }
+
+    // ============================================================
+    // DELETE REFERRAL BY ID
+    // ============================================================
+    public void deleteById(String referralId) {
+        boolean removed = referrals.removeIf(r -> r.getId().equals(referralId));
+        if (removed) {
+            // Update CSV file after deletion
+            updateCsvFile();
+        }
+    }
+
+    // ============================================================
+    // FIND REFERRAL BY ID
+    // ============================================================
+    public Referral findById(String id) {
+        for (Referral r : referrals) {
+            if (r.getId().equals(id)) {
+                return r;
+            }
+        }
+        return null;
+    }
+    
+    // ============================================================
+    // HELPER METHOD TO UPDATE CSV FILE
+    // ============================================================
+    private void updateCsvFile() {
+        try {
+            List<String[]> rows = new ArrayList<>();
+            
+            // Convert all referrals to CSV rows
+            for (Referral r : referrals) {
+                rows.add(new String[] {
+                    r.getId(),
+                    r.getPatientId(),
+                    r.getReferringClinicianId(),
+                    r.getReferredToClinicianId(),
+                    r.getReferringFacilityId(),
+                    r.getReferredToFacilityId(),
+                    r.getReferralDate(),
+                    r.getUrgencyLevel(),
+                    r.getReferralReason(),
+                    r.getClinicalSummary(),
+                    r.getRequestedService(),
+                    r.getStatus(),
+                    r.getAppointmentId(),
+                    r.getNotes(),
+                    r.getCreatedDate(),
+                    r.getLastUpdated()
+                });
+            }
+            
+            // Write all rows to CSV
+            CsvUtils.writeCsv(csvPath, rows);
+            
+        } catch (IOException ex) {
+            System.err.println("Failed to update CSV file: " + ex.getMessage());
+        }
+    }
+    
+    // ============================================================
+    // REPLACE ALL REFERRALS (FOR BULK UPDATES)
+    // ============================================================
+    public void replaceAll(List<Referral> newReferrals) {
+        referrals.clear();
+        referrals.addAll(newReferrals);
+        updateCsvFile();
+    }
 }
