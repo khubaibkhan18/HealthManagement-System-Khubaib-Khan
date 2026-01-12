@@ -33,7 +33,7 @@ public class ReferralView extends JPanel {
     private JComboBox<String> cbRefFacility, cbToFacility;
     private JComboBox<String> cbUrgency;
     private JComboBox<String> cbAppointmentId;
-    private JComboBox<String> cbStatus;     // NEW DROPDOWN
+    private JComboBox<String> cbStatus;
 
     private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private final DateTimeFormatter localDateFormatter =
@@ -69,6 +69,16 @@ public class ReferralView extends JPanel {
 
         table = new JTable(model);
         table.setRowHeight(18);
+        
+        // ============================================================
+        // ADD TABLE SELECTION LISTENER FOR REFERRALS
+        // ============================================================
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                loadSelectedReferralIntoForm();
+            }
+        });
+
         add(new JScrollPane(table), BorderLayout.NORTH);
 
         // ============================================================
@@ -101,7 +111,7 @@ public class ReferralView extends JPanel {
         });
         cbUrgency.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-        // NEW STATUS DROPDOWN
+        // STATUS DROPDOWN
         cbStatus = new JComboBox<>(new String[]{
                 "Pending",
                 "Sent",
@@ -134,7 +144,7 @@ public class ReferralView extends JPanel {
 
         formPanel.add(labeled("Referral Reason:", txtReason));
         formPanel.add(labeled("Requested Service:", txtRequestedService));
-        formPanel.add(labeled("Status:", cbStatus));                   // UPDATED
+        formPanel.add(labeled("Status:", cbStatus));
         formPanel.add(labeled("Appointment ID:", cbAppointmentId));
 
         formPanel.add(labeled("Clinical Summary:", new JScrollPane(txtClinicalSummary)));
@@ -196,6 +206,54 @@ public class ReferralView extends JPanel {
         p.add(lbl, BorderLayout.NORTH);
         p.add(field, BorderLayout.CENTER);
         return p;
+    }
+
+    // ============================================================
+    // LOAD SELECTED REFERRAL INTO FORM
+    // ============================================================
+    private void loadSelectedReferralIntoForm() {
+        int selectedRow = table.getSelectedRow();
+        
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        // Get data from selected row
+        txtId.setText(getTableValue(selectedRow, 0));
+        setComboBoxValue(cbPatientId, getTableValue(selectedRow, 1));
+        setComboBoxValue(cbRefClin, getTableValue(selectedRow, 2));
+        setComboBoxValue(cbToClin, getTableValue(selectedRow, 3));
+        setComboBoxValue(cbRefFacility, getTableValue(selectedRow, 4));
+        setComboBoxValue(cbToFacility, getTableValue(selectedRow, 5));
+        txtReferralDate.setText(getTableValue(selectedRow, 6));
+        setComboBoxValue(cbUrgency, getTableValue(selectedRow, 7));
+        txtReason.setText(getTableValue(selectedRow, 8));
+        txtClinicalSummary.setText(getTableValue(selectedRow, 9));
+        txtRequestedService.setText(getTableValue(selectedRow, 10));
+        setComboBoxValue(cbStatus, getTableValue(selectedRow, 11));
+        setComboBoxValue(cbAppointmentId, getTableValue(selectedRow, 12));
+        txtNotes.setText(getTableValue(selectedRow, 13));
+        txtCreatedDate.setText(getTableValue(selectedRow, 14));
+        txtLastUpdated.setText(getTableValue(selectedRow, 15));
+    }
+    
+    private String getTableValue(int row, int column) {
+        Object value = model.getValueAt(row, column);
+        return (value == null) ? "" : value.toString();
+    }
+    
+    private void setComboBoxValue(JComboBox<String> comboBox, String value) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).equals(value)) {
+                comboBox.setSelectedIndex(i);
+                return;
+            }
+        }
+        // If value not found, add it and select it
+        if (!value.isEmpty()) {
+            comboBox.addItem(value);
+            comboBox.setSelectedItem(value);
+        }
     }
 
     // ============================================================
@@ -301,7 +359,7 @@ public class ReferralView extends JPanel {
                 txtReason.getText().trim(),
                 txtClinicalSummary.getText().trim(),
                 txtRequestedService.getText().trim(),
-                (String) cbStatus.getSelectedItem(),         // UPDATED
+                (String) cbStatus.getSelectedItem(),
                 (String) cbAppointmentId.getSelectedItem(),
                 txtNotes.getText().trim(),
                 txtCreatedDate.getText().trim(),

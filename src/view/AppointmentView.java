@@ -2,7 +2,7 @@ package view;
 
 import controller.AppointmentController;
 import model.Appointment;
-import javax.swing.JOptionPane;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -46,6 +46,16 @@ public class AppointmentView extends JPanel {
 
         table = new JTable(model);
         table.setRowHeight(22);
+        
+        // ============================================================
+        // ADD TABLE SELECTION LISTENER FOR APPOINTMENTS
+        // ============================================================
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                loadSelectedAppointmentIntoForm();
+            }
+        });
+
         add(new JScrollPane(table), BorderLayout.SOUTH);
 
         // ============================================================
@@ -192,6 +202,51 @@ public class AppointmentView extends JPanel {
     }
 
     // ============================================================
+    // LOAD SELECTED APPOINTMENT INTO FORM
+    // ============================================================
+    private void loadSelectedAppointmentIntoForm() {
+        int selectedRow = table.getSelectedRow();
+        
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        // Get data from selected row
+        txtId.setText(getTableValue(selectedRow, 0));
+        setComboBoxValue(cbPatientId, getTableValue(selectedRow, 1));
+        setComboBoxValue(cbClinicianId, getTableValue(selectedRow, 2));
+        setComboBoxValue(cbFacilityId, getTableValue(selectedRow, 3));
+        txtDate.setText(getTableValue(selectedRow, 4));
+        txtTime.setText(getTableValue(selectedRow, 5));
+        txtDuration.setText(getTableValue(selectedRow, 6));
+        txtType.setText(getTableValue(selectedRow, 7));
+        setComboBoxValue(cbStatus, getTableValue(selectedRow, 8));
+        txtReason.setText(getTableValue(selectedRow, 9));
+        txtNotes.setText(getTableValue(selectedRow, 10));
+        txtCreatedDate.setText(getTableValue(selectedRow, 11));
+        txtLastModified.setText(getTableValue(selectedRow, 12));
+    }
+    
+    private String getTableValue(int row, int column) {
+        Object value = model.getValueAt(row, column);
+        return (value == null) ? "" : value.toString();
+    }
+    
+    private void setComboBoxValue(JComboBox<String> comboBox, String value) {
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            if (comboBox.getItemAt(i).equals(value)) {
+                comboBox.setSelectedIndex(i);
+                return;
+            }
+        }
+        // If value not found, add it and select it
+        if (!value.isEmpty()) {
+            comboBox.addItem(value);
+            comboBox.setSelectedItem(value);
+        }
+    }
+
+    // ============================================================
     // ADD APPOINTMENT
     // ============================================================
     private void addAppointment() {
@@ -209,6 +264,20 @@ public class AppointmentView extends JPanel {
         if (txtDate.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Appointment date is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+        
+        // Check if patient is trying to add appointment for someone else
+        if (controller.getCurrentUser().getRole().equals("patient")) {
+            String selectedPatientId = (String) cbPatientId.getSelectedItem();
+            String currentPatientId = controller.getCurrentUser().getId();
+            
+            if (!selectedPatientId.equals(currentPatientId)) {
+                JOptionPane.showMessageDialog(this, 
+                    "You can only create appointments for yourself.", 
+                    "Permission Denied", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
 
         Appointment a = new Appointment(
@@ -229,6 +298,14 @@ public class AppointmentView extends JPanel {
 
         controller.addAppointment(a);
 
+        // Clear form and regenerate ID
+        clearAppointmentForm();
+    }
+
+    // ============================================================
+    // CLEAR APPOINTMENT FORM
+    // ============================================================
+    private void clearAppointmentForm() {
         // Regenerate ID & timestamps
         txtId.setText(controller.generateId());
         txtLastModified.setText(LocalDate.now().format(fmt));
@@ -268,7 +345,17 @@ public class AppointmentView extends JPanel {
             }
         }
         
-        controller.deleteById(id);
+        int confirm = JOptionPane.showConfirmDialog(
+            this, 
+            "Delete appointment " + id + "?", 
+            "Confirm Delete", 
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            controller.deleteById(id);
+            clearAppointmentForm(); // Clear form after deletion
+        }
     }
 
     public void setController(AppointmentController controller) {
