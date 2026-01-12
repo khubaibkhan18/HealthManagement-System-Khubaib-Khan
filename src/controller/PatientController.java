@@ -2,18 +2,26 @@ package controller;
 
 import model.Patient;
 import model.PatientRepository;
+import model.AppointmentRepository;
+import model.Appointment;
 import model.User;
 import view.PatientView;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PatientController {
 
     private final PatientRepository repository;
+    private final AppointmentRepository appointmentRepository;
     private final PatientView view;
     private final User currentUser;
     
-    public PatientController(PatientRepository repository, PatientView view, User user) {
+    public PatientController(PatientRepository repository, 
+                             AppointmentRepository appointmentRepository,
+                             PatientView view, 
+                             User user) {
         this.repository = repository;
+        this.appointmentRepository = appointmentRepository;
         this.view = view;
         this.currentUser = user;
         this.view.setController(this);
@@ -30,23 +38,58 @@ public class PatientController {
 
     public void refreshView() {
         String role = currentUser.getRole();
+        String userId = currentUser.getId();
         
         List<Patient> patients;
         
         if (role.equals("patient")) {
             // Patient can only see THEMSELVES
-            String userId = currentUser.getId();
-            patients = repository.getPatientsById(userId);
+            patients = getPatientByIdAsList(userId);
         } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
-            // Clinicians see ALL patients (for now - they need to see patients to create referrals/prescriptions)
-            // In a real system, we'd filter by clinician's patients
-            patients = repository.getAll();
+            // Clinicians can only see patients who have appointments with them
+            patients = getPatientsByClinicianId(userId);
         } else {
             // Other roles (staff, admin) see all patients
             patients = repository.getAll();
         }
         
         view.showPatients(patients);
+    }
+    
+    // Helper method to return a single patient as a list
+    private List<Patient> getPatientByIdAsList(String patientId) {
+        List<Patient> singlePatientList = new ArrayList<>();
+        Patient patient = repository.findById(patientId);
+        if (patient != null) {
+            singlePatientList.add(patient);
+        }
+        return singlePatientList;
+    }
+
+    private List<Patient> getPatientsByClinicianId(String clinicianId) {
+        List<Patient> clinicianPatients = new ArrayList<>();
+        
+        // Get all appointments for this clinician
+        List<Appointment> clinicianAppointments = appointmentRepository.getAppointmentsByClinicianId(clinicianId);
+        
+        // Get unique patient IDs from these appointments
+        List<String> patientIds = new ArrayList<>();
+        for (Appointment a : clinicianAppointments) {
+            String patientId = a.getPatientId();
+            if (patientId != null && !patientId.isEmpty() && !patientIds.contains(patientId)) {
+                patientIds.add(patientId);
+            }
+        }
+        
+        // Get patient objects for these IDs
+        for (String patientId : patientIds) {
+            Patient p = repository.findById(patientId);
+            if (p != null) {
+                clinicianPatients.add(p);
+            }
+        }
+        
+        return clinicianPatients;
     }
 
     public void addPatient(Patient p) {

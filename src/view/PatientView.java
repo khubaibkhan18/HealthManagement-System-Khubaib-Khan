@@ -46,6 +46,15 @@ public class PatientView extends JPanel {
 
         table = new JTable(tableModel);
         table.setRowHeight(22);
+        
+        // ============================================================
+        // ADD TABLE SELECTION LISTENER
+        // ============================================================
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                loadSelectedPatientIntoForm();
+            }
+        });
 
         add(new JScrollPane(table), BorderLayout.SOUTH);
 
@@ -160,7 +169,7 @@ public class PatientView extends JPanel {
         // Hide the auto-ID label since patients can't add
         lblAutoId.setVisible(false);
     }
-
+    
     // ============================================================
     // DISABLE EDITING FOR CLINICIANS
     // ============================================================
@@ -170,7 +179,20 @@ public class PatientView extends JPanel {
         btnDelete.setVisible(false);
         
         // But they can view patient details (fields remain enabled for viewing)
-        // No need to disable form fields - clinicians can view but not edit patient info
+        // We'll make them read-only so clinicians can view but not edit
+        txtFirstName.setEditable(false);
+        txtLastName.setEditable(false);
+        txtDob.setEditable(false);
+        txtNhs.setEditable(false);
+        txtGender.setEditable(false);
+        txtPhone.setEditable(false);
+        txtEmail.setEditable(false);
+        txtAddress.setEditable(false);
+        txtPostcode.setEditable(false);
+        txtEmergencyName.setEditable(false);
+        txtEmergencyPhone.setEditable(false);
+        txtRegistrationDate.setEditable(false);
+        txtGpSurgery.setEditable(false);
     }
 
     // ============================================================
@@ -178,6 +200,7 @@ public class PatientView extends JPanel {
     // ============================================================
     public void setController(PatientController controller) {
         this.controller = controller;
+        // Check if user is patient and disable editing
         if (controller != null) {
             String role = controller.getCurrentUser().getRole();
             
@@ -209,6 +232,54 @@ public class PatientView extends JPanel {
     }
 
     // ============================================================
+    // LOAD SELECTED PATIENT INTO FORM
+    // ============================================================
+    private void loadSelectedPatientIntoForm() {
+        int selectedRow = table.getSelectedRow();
+        
+        if (selectedRow < 0) {
+            return; // No row selected
+        }
+        
+        // Get data from selected row
+        String patientId = getTableValue(selectedRow, 0);
+        String firstName = getTableValue(selectedRow, 1);
+        String lastName = getTableValue(selectedRow, 2);
+        String dob = getTableValue(selectedRow, 3);
+        String nhs = getTableValue(selectedRow, 4);
+        String gender = getTableValue(selectedRow, 5);
+        String phone = getTableValue(selectedRow, 6);
+        String email = getTableValue(selectedRow, 7);
+        String address = getTableValue(selectedRow, 8);
+        String postcode = getTableValue(selectedRow, 9);
+        String emergencyName = getTableValue(selectedRow, 10);
+        String emergencyPhone = getTableValue(selectedRow, 11);
+        String registrationDate = getTableValue(selectedRow, 12);
+        String gpSurgery = getTableValue(selectedRow, 13);
+        
+        // Populate form fields
+        lblAutoId.setText(patientId);
+        txtFirstName.setText(firstName);
+        txtLastName.setText(lastName);
+        txtDob.setText(dob);
+        txtNhs.setText(nhs);
+        txtGender.setText(gender);
+        txtPhone.setText(phone);
+        txtEmail.setText(email);
+        txtAddress.setText(address);
+        txtPostcode.setText(postcode);
+        txtEmergencyName.setText(emergencyName);
+        txtEmergencyPhone.setText(emergencyPhone);
+        txtRegistrationDate.setText(registrationDate);
+        txtGpSurgery.setText(gpSurgery);
+    }
+    
+    private String getTableValue(int row, int column) {
+        Object value = tableModel.getValueAt(row, column);
+        return (value == null) ? "" : value.toString();
+    }
+
+    // ============================================================
     // ADD PATIENT
     // ============================================================
     private void onAdd() {
@@ -232,6 +303,34 @@ public class PatientView extends JPanel {
         );
 
         controller.addPatient(p);
+        
+        // Clear form after adding
+        clearForm();
+    }
+
+    // ============================================================
+    // CLEAR FORM
+    // ============================================================
+    private void clearForm() {
+        // Generate new ID for next patient
+        // You might want to get this from controller
+        // For now, just clear the ID
+        lblAutoId.setText("");
+        
+        // Clear all text fields
+        txtFirstName.setText("");
+        txtLastName.setText("");
+        txtDob.setText("");
+        txtNhs.setText("");
+        txtGender.setText("");
+        txtPhone.setText("");
+        txtEmail.setText("");
+        txtAddress.setText("");
+        txtPostcode.setText("");
+        txtEmergencyName.setText("");
+        txtEmergencyPhone.setText("");
+        txtRegistrationDate.setText("");
+        txtGpSurgery.setText("");
     }
 
     // ============================================================
@@ -250,6 +349,18 @@ public class PatientView extends JPanel {
         String id = tableModel.getValueAt(row, 0).toString();
         Patient p = controller.findById(id);
 
-        if (p != null) controller.deletePatient(p);
+        if (p != null) {
+            int confirm = JOptionPane.showConfirmDialog(
+                this, 
+                "Delete patient " + p.getFullName() + "?", 
+                "Confirm Delete", 
+                JOptionPane.YES_NO_OPTION
+            );
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                controller.deletePatient(p);
+                clearForm(); // Clear form after deletion
+            }
+        }
     }
 }

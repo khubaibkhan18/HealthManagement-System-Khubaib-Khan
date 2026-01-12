@@ -108,7 +108,12 @@ public class Main {
             // ================================
             // CONTROLLERS
             // ================================
-            PatientController pc = new PatientController(pr, pv, user);
+            PatientController pc = new PatientController(
+                    pr,   // PatientRepository
+                    ar,   // AppointmentRepository - ADDED THIS
+                    pv,   // PatientView
+                    user  // Current User
+            );
 
             ClinicianController cc = new ClinicianController(cr, cv, user);
 
