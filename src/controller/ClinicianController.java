@@ -20,6 +20,13 @@ public class ClinicianController {
         refresh();
     }
     
+    // ============================================================
+    // GET CURRENT USER
+    // ============================================================
+    public User getCurrentUser() {
+        return currentUser;
+    }
+    
     public ClinicianView getView() {
         return view;
     }

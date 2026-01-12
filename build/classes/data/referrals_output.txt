@@ -19,3 +19,24 @@ Created Date: 23/11/2025
 Last Updated: 23/11/2025
 ----------------------------------------------
 
+==============================================
+            REFERRAL SUMMARY REPORT           
+==============================================
+Referral ID: R012
+Referring Clinician: Dr. David Thompson GP (Dr. David - General Practice)
+Referred To: Dr. David Thompson GP (Dr. David - General Practice)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Birmingham Central GP Surgery (GP Surgery)
+Referral Date: 12/01/2026
+Urgency Level: Routine
+Reason for Referral: Heart issue
+Requested Service: Blood pressure
+Status: Pending
+Clinical Summary:
+Hello
+Notes:
+Not needed
+Created Date: 12/01/2026
+Last Updated: 12/01/2026
+----------------------------------------------
+

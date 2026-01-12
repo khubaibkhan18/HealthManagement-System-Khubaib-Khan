@@ -162,13 +162,31 @@ public class PatientView extends JPanel {
     }
 
     // ============================================================
+    // DISABLE EDITING FOR CLINICIANS
+    // ============================================================
+    private void disableEditingForClinician() {
+        // Clinicians cannot add or delete patients
+        btnAdd.setVisible(false);
+        btnDelete.setVisible(false);
+        
+        // But they can view patient details (fields remain enabled for viewing)
+        // No need to disable form fields - clinicians can view but not edit patient info
+    }
+
+    // ============================================================
     // CONTROLLER LINK
     // ============================================================
     public void setController(PatientController controller) {
         this.controller = controller;
-        // Check if user is patient and disable editing
-        if (controller != null && controller.getCurrentUser().getRole().equals("patient")) {
-            disableEditingForPatient();
+        if (controller != null) {
+            String role = controller.getCurrentUser().getRole();
+            
+            if (role.equals("patient")) {
+                disableEditingForPatient();
+            } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
+                disableEditingForClinician();
+            }
+            // Staff/admin keep full access
         }
     }
 

@@ -30,15 +30,19 @@ public class PatientController {
 
     public void refreshView() {
         String role = currentUser.getRole();
-        String userId = currentUser.getId();
         
         List<Patient> patients;
         
         if (role.equals("patient")) {
             // Patient can only see THEMSELVES
+            String userId = currentUser.getId();
             patients = repository.getPatientsById(userId);
+        } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
+            // Clinicians see ALL patients (for now - they need to see patients to create referrals/prescriptions)
+            // In a real system, we'd filter by clinician's patients
+            patients = repository.getAll();
         } else {
-            // Other roles see all patients
+            // Other roles (staff, admin) see all patients
             patients = repository.getAll();
         }
         
@@ -46,8 +50,9 @@ public class PatientController {
     }
 
     public void addPatient(Patient p) {
-        // Patients cannot add patients
-        if (currentUser.getRole().equals("patient")) {
+        // Only staff/admin can add patients (not clinicians or patients)
+        String role = currentUser.getRole();
+        if (role.equals("patient") || role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             return;
         }
         
@@ -56,8 +61,9 @@ public class PatientController {
     }
 
     public void deletePatient(Patient p) {
-        // Patients cannot delete patients
-        if (currentUser.getRole().equals("patient")) {
+        // Only staff/admin can delete patients (not clinicians or patients)
+        String role = currentUser.getRole();
+        if (role.equals("patient") || role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             return;
         }
         
