@@ -7,6 +7,7 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private User currentUser;
+    private StatusBarView statusBar;  // Changed to StatusBarView
     
     public MainFrame(PatientController pc,
                      ClinicianController cc,
@@ -18,17 +19,30 @@ public class MainFrame extends JFrame {
         super("Healthcare Management System - " + user.getName());
         this.currentUser = user;
         
-        setupRoleBasedInterface(pc, cc, ac, prc, rc);
+        // Create main panel with BorderLayout
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        
+        // Create tabbed pane
+        JTabbedPane tabs = setupTabs(pc, cc, ac, prc, rc);
+        mainPanel.add(tabs, BorderLayout.CENTER);
+        
+        // Add status bar at bottom
+        statusBar = new StatusBarView(user);
+        mainPanel.add(statusBar, BorderLayout.SOUTH);
+        
+        setContentPane(mainPanel);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 700);
+        setSize(1100, 750);
         setLocationRelativeTo(null);
+        
+        // Test: Set a status message to confirm it's working
+        statusBar.setStatus("System loaded successfully", "success");
     }
     
-    private void setupRoleBasedInterface(PatientController pc, ClinicianController cc,
-                                         AppointmentController ac, PrescriptionController prc,
-                                         ReferralController rc) {
-        
+    private JTabbedPane setupTabs(PatientController pc, ClinicianController cc,
+                                  AppointmentController ac, PrescriptionController prc,
+                                  ReferralController rc) {
         JTabbedPane tabs = new JTabbedPane();
         String role = currentUser.getRole().toLowerCase();
         
@@ -83,6 +97,10 @@ public class MainFrame extends JFrame {
             tabs.addTab("Referrals", rc.getView());
         }
         
-        setContentPane(tabs);
+        return tabs;
+    }
+    
+    public StatusBarView getStatusBar() {
+        return statusBar;
     }
 }

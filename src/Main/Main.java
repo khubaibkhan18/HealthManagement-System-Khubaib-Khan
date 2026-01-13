@@ -150,6 +150,7 @@ public class Main {
             // ================================
             MainFrame frame = new MainFrame(pc, cc, ac, prc, rc, user);
             frame.setVisible(true);
+            
 
         } catch (Exception e) {
             System.err.println("Error opening application: " + e.getMessage());
