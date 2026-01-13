@@ -130,4 +130,39 @@ public class AppointmentRepository {
         }
         return filtered;
     }
+    
+    // ============================================================
+    // UPDATE APPOINTMENT AND SAVE TO CSV
+    // ============================================================
+    public void update(Appointment updatedAppointment) {
+        for (int i = 0; i < appointments.size(); i++) {
+            if (appointments.get(i).getId().equals(updatedAppointment.getId())) {
+                appointments.set(i, updatedAppointment);
+                writeAllAppointmentsToCSV();
+                return;
+            }
+        }
+    }
+
+    // ============================================================
+    // WRITE ALL APPOINTMENTS TO CSV
+    // ============================================================
+    private void writeAllAppointmentsToCSV() {
+        List<String[]> rows = new ArrayList<>();
+        for (Appointment a : appointments) {
+            rows.add(new String[]{
+                a.getId(), a.getPatientId(), a.getClinicianId(),
+                a.getFacilityId(), a.getAppointmentDate(),
+                a.getAppointmentTime(), a.getDurationMinutes(),
+                a.getAppointmentType(), a.getStatus(),
+                a.getReasonForVisit(), a.getNotes(),
+                a.getCreatedDate(), a.getLastModified()
+            });
+        }
+        try {
+            CsvUtils.writeCsv(csvPath, rows);
+        } catch (IOException ex) {
+            System.err.println("Failed to write appointments CSV: " + ex.getMessage());
+        }
+    }
 }

@@ -28,6 +28,9 @@ public class AppointmentView extends JPanel {
 
     private JTextArea txtNotes;
 
+    // Button references
+    private JButton btnUpdate;
+
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public AppointmentView() {
@@ -117,13 +120,16 @@ public class AppointmentView extends JPanel {
         // BUTTONS
         // ============================================================
         JButton btnAdd = new JButton("Add Appointment");
+        btnUpdate = new JButton("Update Appointment");
         JButton btnDelete = new JButton("Delete Selected");
 
         btnAdd.addActionListener(e -> addAppointment());
+        btnUpdate.addActionListener(e -> updateAppointment());
         btnDelete.addActionListener(e -> deleteAppointment());
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttons.add(btnAdd);
+        buttons.add(btnUpdate);
         buttons.add(btnDelete);
 
         add(buttons, BorderLayout.NORTH);
@@ -358,7 +364,79 @@ public class AppointmentView extends JPanel {
         }
     }
 
+    // ============================================================
+    // UPDATE APPOINTMENT
+    // ============================================================
+    private void updateAppointment() {
+        if (controller == null) return;
+        
+        String appointmentId = txtId.getText();
+        if (appointmentId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Please select an appointment to update.", 
+                "No Selection", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        // Validate required fields
+        if (cbPatientId.getSelectedItem() == null || cbPatientId.getSelectedItem().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Patient ID is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (cbClinicianId.getSelectedItem() == null || cbClinicianId.getSelectedItem().toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Clinician ID is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (txtDate.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Appointment date is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        Appointment a = new Appointment(
+            appointmentId,
+            (String) cbPatientId.getSelectedItem(),
+            (String) cbClinicianId.getSelectedItem(),
+            (String) cbFacilityId.getSelectedItem(),
+            txtDate.getText(),
+            txtTime.getText(),
+            txtDuration.getText(),
+            txtType.getText(),
+            (String) cbStatus.getSelectedItem(),
+            txtReason.getText(),
+            txtNotes.getText(),
+            txtCreatedDate.getText(),
+            txtLastModified.getText()
+        );
+        
+        controller.updateAppointment(a);
+        clearAppointmentForm();
+    }
+
+    // ============================================================
+    // SET CONTROLLER WITH ROLE-BASED PERMISSIONS
+    // ============================================================
     public void setController(AppointmentController controller) {
         this.controller = controller;
+        if (controller != null) {
+            String role = controller.getCurrentUser().getRole();
+            
+            // Patients can't edit appointment details
+            if (role.equals("patient")) {
+                cbPatientId.setEnabled(false);
+                cbClinicianId.setEnabled(false);
+                cbFacilityId.setEnabled(false);
+                txtDate.setEditable(false);
+                txtTime.setEditable(false);
+                txtDuration.setEditable(false);
+                txtType.setEditable(false);
+                cbStatus.setEnabled(false);
+                txtReason.setEditable(false);
+                txtNotes.setEditable(false);
+            }
+            // Staff, clinicians, admin can edit all fields
+        }
     }
 }

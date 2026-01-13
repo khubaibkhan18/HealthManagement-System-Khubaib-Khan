@@ -135,6 +135,23 @@ public class AppointmentController {
         refreshAppointments();
     }
     
+    // ============================================================
+    // UPDATE APPOINTMENT
+    // ============================================================
+    public void updateAppointment(Appointment a) {
+        // All roles except patient can update appointments
+        if (currentUser.getRole().equals("patient")) {
+            JOptionPane.showMessageDialog(view, 
+                "You cannot modify appointments.", 
+                "Permission Denied", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        repo.update(a);
+        refreshAppointments();
+    }
+    
     // Helper method to check if current user can delete an appointment
     public boolean canDeleteAppointment(String appointmentId) {
         if (!currentUser.getRole().equals("patient")) {
