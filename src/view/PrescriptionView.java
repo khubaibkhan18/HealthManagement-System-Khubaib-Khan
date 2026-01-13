@@ -206,13 +206,47 @@ public class PrescriptionView extends JPanel {
     }
 
     // ============================================================
+    // DISABLE EDITING FOR STAFF
+    // ============================================================
+    private void disableEditingForStaff() {
+        // Hide all buttons for staff
+        btnAdd.setVisible(false);
+        btnUpdate.setVisible(false);
+        btnDelete.setVisible(false);
+        
+        // Disable all form fields for staff
+        cbPatientId.setEnabled(false);
+        cbClinicianId.setEnabled(false);
+        cbDrug.setEnabled(false);
+        cbPharmacy.setEnabled(false);
+        cbStatus.setEnabled(false);
+        cbAppointmentId.setEnabled(false);
+        
+        txtPrescDate.setEditable(false);
+        txtDosage.setEditable(false);
+        txtFrequency.setEditable(false);
+        txtDuration.setEditable(false);
+        txtQuantity.setEditable(false);
+        txtIssueDate.setEditable(false);
+        txtCollectionDate.setEditable(false);
+        txtInstructions.setEditable(false);
+        
+        // Hide the ID label since staff can't add prescriptions
+        lblId.setVisible(false);
+    }
+
+    // ============================================================
     // Controller Hooks
     // ============================================================
     public void setController(PrescriptionController controller) {
         this.controller = controller;
-        // Check if user is patient and disable editing
-        if (controller != null && controller.getCurrentUser().getRole().equals("patient")) {
-            disableEditingForPatient();
+        if (controller != null) {
+            String role = controller.getCurrentUser().getRole();
+            if (role.equals("patient")) {
+                disableEditingForPatient();
+            } else if (role.equals("staff")) {
+                disableEditingForStaff(); // ADD THIS
+            }
         }
     }
 
