@@ -2,22 +2,22 @@ package model;
 
 public class Referral {
 
-    private String id;                    // referral_id
-    private String patientId;             // patient_id
-    private String referringClinicianId;  // referring_clinician
-    private String referredToClinicianId; // referred_to
-    private String referringFacilityId;   // referring_facility
-    private String referredToFacilityId;  // referred_to_facility
-    private String referralDate;          // referral_date
-    private String urgencyLevel;          // urgency_level
-    private String referralReason;        // referral_reason
-    private String clinicalSummary;       // clinical_summary
-    private String requestedService;      // requested_service
-    private String status;                // status
-    private String appointmentId;         // appointment_id
-    private String notes;                 // notes
-    private String createdDate;           // created_date
-    private String lastUpdated;           // last_updated
+    private String id;// referral_id
+    private String patientId;             
+    private String referringClinicianId;  
+    private String referredToClinicianId; 
+    private String referringFacilityId;   
+    private String referredToFacilityId;  
+    private String referralDate;          
+    private String urgencyLevel;          
+    private String referralReason;        
+    private String clinicalSummary;       
+    private String requestedService;      
+    private String status;                
+    private String appointmentId;         
+    private String notes;                 
+    private String createdDate;           
+    private String lastUpdated;          
 
     public Referral() {}
 

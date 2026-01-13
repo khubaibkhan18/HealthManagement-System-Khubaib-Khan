@@ -14,16 +14,13 @@ public class PatientView extends JPanel {
 
     private JTable table;
     private DefaultTableModel tableModel;
-
-    // 14 CSV-matching fields
     private JLabel lblAutoId;
     private JTextField txtFirstName, txtLastName, txtDob, txtNhs, txtGender;
     private JTextField txtPhone, txtEmail;
     private JTextField txtAddress, txtPostcode;
     private JTextField txtEmergencyName, txtEmergencyPhone;
     private JTextField txtRegistrationDate, txtGpSurgery;
-    
-    // Button references
+    //action buttons
     private JButton btnAdd;
     private JButton btnUpdate;
     private JButton btnDelete;
@@ -33,9 +30,7 @@ public class PatientView extends JPanel {
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // ============================================================
-        // TABLE (BOTTOM)
-        // ============================================================
+        //patient list table at bottom which shows all patient records
         tableModel = new DefaultTableModel(
                 new Object[]{
                         "ID", "First Name", "Last Name", "DOB", "NHS",
@@ -47,10 +42,6 @@ public class PatientView extends JPanel {
 
         table = new JTable(tableModel);
         table.setRowHeight(22);
-        
-        // ============================================================
-        // ADD TABLE SELECTION LISTENER
-        // ============================================================
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 loadSelectedPatientIntoForm();
@@ -59,15 +50,13 @@ public class PatientView extends JPanel {
 
         add(new JScrollPane(table), BorderLayout.SOUTH);
 
-        // ============================================================
-        // FORM (CENTER) — 4 columns using GridBagLayout
-        // ============================================================
+        // Patient details
         JPanel form = new JPanel(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(10, 15, 10, 15);
         gc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Create fields
+    // Creating text fields 
         lblAutoId = new JLabel("P001");
 
         txtFirstName = new JTextField();
@@ -84,12 +73,8 @@ public class PatientView extends JPanel {
         txtRegistrationDate = new JTextField();
         txtGpSurgery = new JTextField();
 
-        // Row counter
         int row = 0;
 
-        // ============================================================
-        // ADD FORM ROWS (4 columns each)
-        // ============================================================
         add4(form, gc, row++, "Patient ID:", lblAutoId, "First Name:", txtFirstName);
         add4(form, gc, row++, "Last Name:", txtLastName, "DOB (YYYY-MM-DD):", txtDob);
         add4(form, gc, row++, "NHS Number:", txtNhs, "Gender (M/F):", txtGender);
@@ -102,9 +87,7 @@ public class PatientView extends JPanel {
 
         add(form, BorderLayout.CENTER);
 
-        // ============================================================
-        // BUTTONS (TOP)
-        // ============================================================
+ // the control buttons
         btnAdd = new JButton("Add Patient");
         btnUpdate = new JButton("Update Patient");
         btnDelete = new JButton("Delete Selected");
@@ -120,43 +103,28 @@ public class PatientView extends JPanel {
 
         add(buttons, BorderLayout.NORTH);
     }
-
-    // =================================================================
-    // Helper — Adds one ROW with 4 columns
-    // =================================================================
     private void add4(JPanel panel, GridBagConstraints gc, int row,
                       String label1, JComponent field1,
                       String label2, JComponent field2) {
 
         gc.gridy = row;
-
-        // Left label
         gc.gridx = 0; gc.weightx = 0.15;
         panel.add(new JLabel(label1), gc);
-
-        // Left field
         gc.gridx = 1; gc.weightx = 0.35;
         panel.add(field1, gc);
-
-        // Right label
         gc.gridx = 2; gc.weightx = 0.15;
         panel.add(new JLabel(label2), gc);
 
-        // Right field
         gc.gridx = 3; gc.weightx = 0.35;
         panel.add(field2, gc);
     }
 
-    // ============================================================
-    // DISABLE EDITING FOR PATIENTS
-    // ============================================================
+ //Patients can only view their own data, not edit
     private void disableEditingForPatient() {
-        // Hide all buttons for patients
         btnAdd.setVisible(false);
         btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
-        // Disable all form fields for patients (make read-only)
         txtFirstName.setEditable(false);
         txtLastName.setEditable(false);
         txtDob.setEditable(false);
@@ -171,21 +139,15 @@ public class PatientView extends JPanel {
         txtRegistrationDate.setEditable(false);
         txtGpSurgery.setEditable(false);
         
-        // Hide the auto-ID label since patients can't add
         lblAutoId.setVisible(false);
     }
     
-    // ============================================================
-    // DISABLE EDITING FOR CLINICIANS
-    // ============================================================
+    //Clinicians can view patient details but not modify them
     private void disableEditingForClinician() {
-        // Clinicians cannot add, update or delete patients
         btnAdd.setVisible(false);
         btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
-        // But they can view patient details (fields remain enabled for viewing)
-        // We'll make them read-only so clinicians can view but not edit
         txtFirstName.setEditable(false);
         txtLastName.setEditable(false);
         txtDob.setEditable(false);
@@ -201,12 +163,9 @@ public class PatientView extends JPanel {
         txtGpSurgery.setEditable(false);
     }
 
-    // ============================================================
-    // CONTROLLER LINK
-    // ============================================================
+  //Set controller
     public void setController(PatientController controller) {
         this.controller = controller;
-        // Check if user is patient and disable editing
         if (controller != null) {
             String role = controller.getCurrentUser().getRole();
             
@@ -215,7 +174,7 @@ public class PatientView extends JPanel {
             } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
                 disableEditingForClinician();
             } else if (role.equals("staff") || role.equals("admin")) {
-                // Enable editing for staff/admin
+              // Staffand admin editing access
                 txtFirstName.setEditable(true);
                 txtLastName.setEditable(true);
                 txtDob.setEditable(true);
@@ -230,7 +189,6 @@ public class PatientView extends JPanel {
                 txtRegistrationDate.setEditable(true);
                 txtGpSurgery.setEditable(true);
                 
-                // Show all buttons for staff/admin
                 btnAdd.setVisible(true);
                 btnUpdate.setVisible(true);
                 btnDelete.setVisible(true);
@@ -238,10 +196,6 @@ public class PatientView extends JPanel {
             }
         }
     }
-
-    // ============================================================
-    // SHOW PATIENTS
-    // ============================================================
     public void showPatients(List<Patient> list) {
         tableModel.setRowCount(0);
 
@@ -257,64 +211,40 @@ public class PatientView extends JPanel {
         }
     }
 
-    // ============================================================
-    // LOAD SELECTED PATIENT INTO FORM
-    // ============================================================
     private void loadSelectedPatientIntoForm() {
         int selectedRow = table.getSelectedRow();
         
         if (selectedRow < 0) {
-            return; // No row selected
+            return;
         }
         
-        // Get data from selected row
-        String patientId = getTableValue(selectedRow, 0);
-        String firstName = getTableValue(selectedRow, 1);
-        String lastName = getTableValue(selectedRow, 2);
-        String dob = getTableValue(selectedRow, 3);
-        String nhs = getTableValue(selectedRow, 4);
-        String gender = getTableValue(selectedRow, 5);
-        String phone = getTableValue(selectedRow, 6);
-        String email = getTableValue(selectedRow, 7);
-        String address = getTableValue(selectedRow, 8);
-        String postcode = getTableValue(selectedRow, 9);
-        String emergencyName = getTableValue(selectedRow, 10);
-        String emergencyPhone = getTableValue(selectedRow, 11);
-        String registrationDate = getTableValue(selectedRow, 12);
-        String gpSurgery = getTableValue(selectedRow, 13);
-        
-        // Populate form fields
-        lblAutoId.setText(patientId);
-        txtFirstName.setText(firstName);
-        txtLastName.setText(lastName);
-        txtDob.setText(dob);
-        txtNhs.setText(nhs);
-        txtGender.setText(gender);
-        txtPhone.setText(phone);
-        txtEmail.setText(email);
-        txtAddress.setText(address);
-        txtPostcode.setText(postcode);
-        txtEmergencyName.setText(emergencyName);
-        txtEmergencyPhone.setText(emergencyPhone);
-        txtRegistrationDate.setText(registrationDate);
-        txtGpSurgery.setText(gpSurgery);
+        lblAutoId.setText(getTableValue(selectedRow, 0));
+        txtFirstName.setText(getTableValue(selectedRow, 1));
+        txtLastName.setText(getTableValue(selectedRow, 2));
+        txtDob.setText(getTableValue(selectedRow, 3));
+        txtNhs.setText(getTableValue(selectedRow, 4));
+        txtGender.setText(getTableValue(selectedRow, 5));
+        txtPhone.setText(getTableValue(selectedRow, 6));
+        txtEmail.setText(getTableValue(selectedRow, 7));
+        txtAddress.setText(getTableValue(selectedRow, 8));
+        txtPostcode.setText(getTableValue(selectedRow, 9));
+        txtEmergencyName.setText(getTableValue(selectedRow, 10));
+        txtEmergencyPhone.setText(getTableValue(selectedRow, 11));
+        txtRegistrationDate.setText(getTableValue(selectedRow, 12));
+        txtGpSurgery.setText(getTableValue(selectedRow, 13));
     }
     
     private String getTableValue(int row, int column) {
         Object value = tableModel.getValueAt(row, column);
         return (value == null) ? "" : value.toString();
     }
-
-    // ============================================================
-    // ADD PATIENT WITH VALIDATION
-    // ============================================================
+    //addding a patient 
     private void onAdd() {
         if (controller == null) return;
 
-        // VALIDATION CHECKS
         StringBuilder errors = new StringBuilder();
         
-        // Name validation
+     // Validate the required fields 
         if (txtFirstName.getText().trim().isEmpty()) {
             errors.append("- First name is required\n");
         }
@@ -322,27 +252,21 @@ public class PatientView extends JPanel {
             errors.append("- Last name is required\n");
         }
         
-        // Date validation
         if (!ValidationUtils.isValidDate(txtDob.getText(), "yyyy-MM-dd")) {
             errors.append("- Date of birth must be in YYYY-MM-DD format\n");
         }
         
-        // NHS number validation
         if (!ValidationUtils.isValidNhsNumber(txtNhs.getText())) {
             errors.append("- NHS number must be 10 digits\n");
         }
         
-        // Phone validation
         if (!ValidationUtils.isValidPhone(txtPhone.getText())) {
             errors.append("- Phone must start with 07 and be 11 digits\n");
         }
         
-        // Email validation
         if (!ValidationUtils.isValidEmail(txtEmail.getText())) {
             errors.append("- Invalid email format\n");
         }
-        
-        // Show errors if any
         if (errors.length() > 0) {
             JOptionPane.showMessageDialog(this, 
                 "Please fix the following errors:\n\n" + errors.toString(),
@@ -350,8 +274,6 @@ public class PatientView extends JPanel {
                 JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        // If validation passes, create patient
         Patient p = new Patient(
                 lblAutoId.getText(),
                 txtFirstName.getText(),
@@ -373,16 +295,8 @@ public class PatientView extends JPanel {
         clearForm();
     }
 
-    // ============================================================
-    // CLEAR FORM
-    // ============================================================
     private void clearForm() {
-        // Generate new ID for next patient
-        // You might want to get this from controller
-        // For now, just clear the ID
         lblAutoId.setText("");
-        
-        // Clear all text fields
         txtFirstName.setText("");
         txtLastName.setText("");
         txtDob.setText("");
@@ -397,10 +311,6 @@ public class PatientView extends JPanel {
         txtRegistrationDate.setText("");
         txtGpSurgery.setText("");
     }
-
-    // ============================================================
-    // DELETE PATIENT
-    // ============================================================
     private void onDelete() {
         if (controller == null) return;
 
@@ -424,14 +334,12 @@ public class PatientView extends JPanel {
             
             if (confirm == JOptionPane.YES_OPTION) {
                 controller.deletePatient(p);
-                clearForm(); // Clear form after deletion
+                clearForm();
             }
         }
     }
 
-    // ============================================================
-    // UPDATE PATIENT
-    // ============================================================
+    //update existing patient
     private void onUpdate() {
         if (controller == null) return;
         String patientId = lblAutoId.getText();

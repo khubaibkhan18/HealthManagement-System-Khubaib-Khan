@@ -17,35 +17,22 @@ public class AppointmentRepository {
     private void load() {
         try {
             for (String[] row : CsvUtils.readCsv(csvPath)) {
-                // CSV columns (14):
-                // 0: appointment_id
-                // 1: patient_id
-                // 2: clinician_id
-                // 3: facility_id
-                // 4: appointment_date
-                // 5: appointment_time
-                // 6: duration_minutes
-                // 7: appointment_type
-                // 8: status
-                // 9: reason_for_visit
-                //10: notes
-                //11: created_date
-                //12: last_modified
+                // 14 CSV columns :
 
                 Appointment a = new Appointment(
                         row[0],  // id
-                        row[1],  // patient_id
-                        row[2],  // clinician_id
-                        row[3],  // facility_id
-                        row[4],  // appointment_date
-                        row[5],  // appointment_time
-                        row[6],  // duration_minutes
-                        row[7],  // appointment_type
+                        row[1],  // patient id
+                        row[2],  // clinician id
+                        row[3],  // facility id
+                        row[4],  // appointment date
+                        row[5],  // appointment time
+                        row[6],  // duration
+                        row[7],  // appointment type
                         row[8],  // status
-                        row[9],  // reason_for_visit
+                        row[9],  // reason for visit
                         row[10], // notes
-                        row[11], // created_date
-                        row[12]  // last_modified
+                        row[11], // created date
+                        row[12]  // last modified
                 );
 
                 appointments.add(a);
@@ -59,12 +46,11 @@ public class AppointmentRepository {
         return appointments;
     }
 
-    // Optional but handy
     public String generateNewId() {
         int max = 0;
         for (Appointment a : appointments) {
             try {
-                int n = Integer.parseInt(a.getId().substring(1)); // "A001" → 1
+                int n = Integer.parseInt(a.getId().substring(1)); // turns A001 to 1
                 if (n > max) max = n;
             } catch (Exception ignore) {}
         }
@@ -107,10 +93,8 @@ public class AppointmentRepository {
             if (a.getId().equals(id)) return a;
         return null;
     }
-    
-    // ============================================================
-    // FILTERING METHODS FOR ROLE-BASED ACCESS
-    // ============================================================
+
+    //ROLE-BASED ACCESS
     public List<Appointment> getAppointmentsByPatientId(String patientId) {
         List<Appointment> filtered = new ArrayList<>();
         for (Appointment a : appointments) {
@@ -130,10 +114,9 @@ public class AppointmentRepository {
         }
         return filtered;
     }
-    
-    // ============================================================
+
     // UPDATE APPOINTMENT AND SAVE TO CSV
-    // ============================================================
+
     public void update(Appointment updatedAppointment) {
         for (int i = 0; i < appointments.size(); i++) {
             if (appointments.get(i).getId().equals(updatedAppointment.getId())) {
@@ -144,9 +127,8 @@ public class AppointmentRepository {
         }
     }
 
-    // ============================================================
-    // WRITE ALL APPOINTMENTS TO CSV
-    // ============================================================
+    // WRITING APPOINTMENTS TO CSV
+
     private void writeAllAppointmentsToCSV() {
         List<String[]> rows = new ArrayList<>();
         for (Appointment a : appointments) {

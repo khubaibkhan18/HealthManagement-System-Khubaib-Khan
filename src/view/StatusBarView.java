@@ -15,30 +15,26 @@ public class StatusBarView extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEtchedBorder());
         
-        // Left: User info
+        //user info to the left 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 2));
         userLabel = new JLabel();
         updateUserInfo(currentUser);
         leftPanel.add(userLabel);
         
-        // Center: Status message
+        //status in the middle 
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 2));
         statusLabel = new JLabel("System Ready");
         statusLabel.setForeground(Color.BLUE);
         centerPanel.add(statusLabel);
         
-        // Right: Date/time
+        //Date and time on thr right 
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 2));
         timeLabel = new JLabel();
         updateTime();
         rightPanel.add(timeLabel);
-        
-        // Add panels
         add(leftPanel, BorderLayout.WEST);
         add(centerPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
-        
-        // Timer to update time every minute
         Timer timer = new Timer(60000, e -> updateTime());
         timer.start();
     }

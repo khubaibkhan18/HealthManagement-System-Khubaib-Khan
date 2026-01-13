@@ -1,9 +1,9 @@
 package model;
 
 public class User {
-    private String role;  // "patient", "gp", "specialist", "nurse", "staff", "admin"
-    private String id;    // "P001", "C001", "ST001", "ADM001"
-    private String name;  // Full name
+    private String role;
+    private String id;
+    private String name;
     
     public User(String role, String id, String name) {
         this.role = role;
@@ -11,7 +11,7 @@ public class User {
         this.name = name;
     }
     
-    // Getters
+    //getters 
     public String getRole() { return role; }
     public String getId() { return id; }
     public String getName() { return name; }

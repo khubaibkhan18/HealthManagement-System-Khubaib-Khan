@@ -18,19 +18,17 @@ public class ClinicianView extends JPanel {
     private JTable table;
     private DefaultTableModel model;
 
+    // Form fields for clinician data entry
     private JLabel lblId;
     private JTextField txtFirstName, txtLastName, txtSpeciality, txtGmc, txtPhone, txtEmail, txtWorkplaceId;
     private JComboBox<String> cmbTitle, cmbWorkplaceType, cmbEmployment;
     private JSpinner dateSpinner;
-
     public ClinicianView() {
 
         setLayout(new BorderLayout(15, 15));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // ============================================================
-        // TABLE
-        // ============================================================
+    // Setup table to display clinician list
         model = new DefaultTableModel(
                 new Object[]{
                         "ID","First","Last","Title","Speciality","GMC",
@@ -43,9 +41,7 @@ public class ClinicianView extends JPanel {
         table.setRowHeight(22);
         add(new JScrollPane(table), BorderLayout.SOUTH);
 
-        // ============================================================
-        // FORM PANEL (4 COLUMNS)
-        // ============================================================
+        // form layout 
         JPanel form = new JPanel(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.insets = new Insets(10, 15, 10, 15);
@@ -61,16 +57,14 @@ public class ClinicianView extends JPanel {
         txtEmail = new JTextField();
         txtWorkplaceId = new JTextField();
 
+        // dropdowns
         cmbTitle = new JComboBox<>(new String[]{"GP","Consultant","Nurse","Specialist"});
         cmbWorkplaceType = new JComboBox<>(new String[]{"GP Surgery","Hospital","Clinic"});
         cmbEmployment = new JComboBox<>(new String[]{"Full-time","Part-time","Locum"});
-
         dateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
         dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy"));
-
         int row = 0;
 
-        // ============================  4 COLUMNS  ============================
         add4(form, gc, row++, "Clinician ID:", lblId,    "Title:", cmbTitle);
         add4(form, gc, row++, "First Name:", txtFirstName, "Last Name:", txtLastName);
         add4(form, gc, row++, "Speciality:", txtSpeciality, "GMC Number:", txtGmc);
@@ -80,9 +74,7 @@ public class ClinicianView extends JPanel {
 
         add(form, BorderLayout.CENTER);
 
-        // ============================================================
-        // BUTTON PANEL
-        // ============================================================
+        // action button
         JButton btnAdd = new JButton("Add Clinician");
         JButton btnDelete = new JButton("Delete Selected");
 
@@ -96,7 +88,6 @@ public class ClinicianView extends JPanel {
         add(buttons, BorderLayout.NORTH);
     }
 
-    // Helper for 4-column rows
     private void add4(JPanel panel, GridBagConstraints gc, int row,
                       String label1, JComponent field1,
                       String label2, JComponent field2) {
@@ -124,16 +115,11 @@ public class ClinicianView extends JPanel {
         panel.add(field2, gc);
     }
 
-    // ============================================================
-    // CONTROLLER LINK
-    // ============================================================
     public void setController(ClinicianController controller) {
         this.controller = controller;
     }
 
-    // ============================================================
-    // DISPLAY DATA
-    // ============================================================
+    //fill table with clinician data
     public void showClinicians(List<Clinician> list) {
         model.setRowCount(0);
 
@@ -146,15 +132,13 @@ public class ClinicianView extends JPanel {
             });
         }
 
+        //generate ID for new entries
         if (controller != null)
             lblId.setText(controller.generateId());
     }
 
-    // ============================================================
-    // ADD NEW CLINICIAN
-    // ============================================================
+ // Create a new cinciian 
     private void onAdd() {
-
         if (controller == null) return;
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -177,9 +161,7 @@ public class ClinicianView extends JPanel {
         controller.addClinician(c);
     }
 
-    // ============================================================
-    // DELETE CLINICIAN
-    // ============================================================
+    // Remove
     private void onDelete() {
         if (controller == null) return;
 

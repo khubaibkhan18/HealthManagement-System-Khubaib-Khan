@@ -17,8 +17,6 @@ public class ReferralRepository {
     private void load() {
         try {
             for (String[] row : CsvUtils.readCsv(csvPath)) {
-
-                // Create Referral object with ALL 16 columns
                 Referral r = new Referral(
                         row[0],  // referral_id
                         row[1],  // patient_id
@@ -50,9 +48,6 @@ public class ReferralRepository {
         return referrals;
     }
 
-    /**
-     * Add referral and append to CSV (ALL 16 COLUMNS)
-     */
     public void addAndAppend(Referral r) {
         referrals.add(r);
 
@@ -81,9 +76,6 @@ public class ReferralRepository {
         }
     }
     
-    // ============================================================
-    // FILTERING METHODS FOR ROLE-BASED ACCESS
-    // ============================================================
     public List<Referral> getReferralsByPatientId(String patientId) {
         List<Referral> filtered = new ArrayList<>();
         for (Referral r : referrals) {
@@ -94,9 +86,6 @@ public class ReferralRepository {
         return filtered;
     }
 
-    // ============================================================
-    // UPDATE REFERRAL
-    // ============================================================
     public void update(Referral updatedReferral) {
         for (int i = 0; i < referrals.size(); i++) {
             if (referrals.get(i).getId().equals(updatedReferral.getId())) {
@@ -106,13 +95,11 @@ public class ReferralRepository {
                 return;
             }
         }
-        // If referral not found, add it as new
+  // If referral not found, add new
         addAndAppend(updatedReferral);
     }
 
-    // ============================================================
-    // DELETE REFERRAL BY ID
-    // ============================================================
+//delete referral 
     public void deleteById(String referralId) {
         boolean removed = referrals.removeIf(r -> r.getId().equals(referralId));
         if (removed) {
@@ -120,10 +107,7 @@ public class ReferralRepository {
             updateCsvFile();
         }
     }
-
-    // ============================================================
-    // FIND REFERRAL BY ID
-    // ============================================================
+//find referral 
     public Referral findById(String id) {
         for (Referral r : referrals) {
             if (r.getId().equals(id)) {
@@ -132,15 +116,9 @@ public class ReferralRepository {
         }
         return null;
     }
-    
-    // ============================================================
-    // HELPER METHOD TO UPDATE CSV FILE
-    // ============================================================
     private void updateCsvFile() {
         try {
             List<String[]> rows = new ArrayList<>();
-            
-            // Convert all referrals to CSV rows
             for (Referral r : referrals) {
                 rows.add(new String[] {
                     r.getId(),
@@ -161,18 +139,14 @@ public class ReferralRepository {
                     r.getLastUpdated()
                 });
             }
-            
-            // Write all rows to CSV
+
             CsvUtils.writeCsv(csvPath, rows);
             
         } catch (IOException ex) {
             System.err.println("Failed to update CSV file: " + ex.getMessage());
         }
     }
-    
-    // ============================================================
-    // REPLACE ALL REFERRALS (FOR BULK UPDATES)
-    // ============================================================
+
     public void replaceAll(List<Referral> newReferrals) {
         referrals.clear();
         referrals.addAll(newReferrals);

@@ -17,7 +17,7 @@ public class AppointmentView extends JPanel {
     private JTable table;
     private DefaultTableModel model;
 
-    // Form components
+// this is the form 
     private JTextField txtId, txtDate, txtTime, txtDuration, txtType;
     private JTextField txtReason, txtCreatedDate, txtLastModified;
 
@@ -28,17 +28,15 @@ public class AppointmentView extends JPanel {
 
     private JTextArea txtNotes;
 
-    // Button references
+    // Buttons
     private JButton btnUpdate;
 
     private final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public AppointmentView() {
         setLayout(new BorderLayout(10, 10));
+    // TABLE
 
-        // ============================================================
-        // TABLE
-        // ============================================================
         model = new DefaultTableModel(
                 new Object[]{
                         "ID", "Patient", "Clinician", "Facility",
@@ -49,10 +47,7 @@ public class AppointmentView extends JPanel {
 
         table = new JTable(model);
         table.setRowHeight(22);
-        
-        // ============================================================
-        // ADD TABLE SELECTION LISTENER FOR APPOINTMENTS
-        // ============================================================
+
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 loadSelectedAppointmentIntoForm();
@@ -61,9 +56,6 @@ public class AppointmentView extends JPanel {
 
         add(new JScrollPane(table), BorderLayout.SOUTH);
 
-        // ============================================================
-        // FORM
-        // ============================================================
         JPanel form = new JPanel(new GridBagLayout());
         form.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         GridBagConstraints gc = new GridBagConstraints();
@@ -107,7 +99,7 @@ public class AppointmentView extends JPanel {
         addFieldPair(form, gc, row++, "Status:", cbStatus, "Reason for Visit:", txtReason);
         addFieldPair(form, gc, row++, "Created Date:", txtCreatedDate, "Last Modified:", txtLastModified);
 
-        // Notes row
+     //Notes
         gc.gridx = 0; gc.gridy = row; gc.gridwidth = 1;
         form.add(new JLabel("Notes:"), gc);
 
@@ -116,9 +108,6 @@ public class AppointmentView extends JPanel {
 
         add(form, BorderLayout.CENTER);
 
-        // ============================================================
-        // BUTTONS
-        // ============================================================
         JButton btnAdd = new JButton("Add Appointment");
         btnUpdate = new JButton("Update Appointment");
         JButton btnDelete = new JButton("Delete Selected");
@@ -135,7 +124,6 @@ public class AppointmentView extends JPanel {
         add(buttons, BorderLayout.NORTH);
     }
 
-    // Helper method for form layout
     private void addFieldPair(JPanel panel, GridBagConstraints gc, int row,
                               String l1, JComponent f1,
                               String l2, JComponent f2) {
@@ -155,25 +143,21 @@ public class AppointmentView extends JPanel {
         panel.add(f2, gc);
     }
 
-    // ============================================================
-    // Dropdown loading
-    // ============================================================
+    // Dropdown 
     public void loadDropdowns(List<String> patients, List<String> clinicians, List<String> facilities) {
         cbPatientId.removeAllItems();
         cbClinicianId.removeAllItems();
         cbFacilityId.removeAllItems();
 
-        // If controller exists and user is a patient, set patient dropdown to their ID only
+  //If controller exists and user is a patient
         if (controller != null && controller.getCurrentUser().getRole().equals("patient")) {
             String patientId = controller.getCurrentUser().getId();
             cbPatientId.addItem(patientId);
-            cbPatientId.setEnabled(false); // Patient can't change their ID
+            cbPatientId.setEnabled(false); 
         } else {
-            // Load all patients for other roles
             for (String s : patients) cbPatientId.addItem(s);
         }
 
-        // Load clinicians and facilities normally
         for (String s : clinicians) cbClinicianId.addItem(s);
         for (String s : facilities) cbFacilityId.addItem(s);
 
@@ -182,9 +166,6 @@ public class AppointmentView extends JPanel {
         txtLastModified.setText(LocalDate.now().format(fmt));
     }
 
-    // ============================================================
-    // TABLE VIEW UPDATE
-    // ============================================================
     public void showAppointments(List<Appointment> list) {
         model.setRowCount(0);
 
@@ -207,17 +188,16 @@ public class AppointmentView extends JPanel {
         }
     }
 
-    // ============================================================
-    // LOAD SELECTED APPOINTMENT INTO FORM
-    // ============================================================
+    // Load the appointments into a form 
+
     private void loadSelectedAppointmentIntoForm() {
         int selectedRow = table.getSelectedRow();
         
         if (selectedRow < 0) {
-            return; // No row selected
+            return;
         }
         
-        // Get data from selected row
+     // Get data 
         txtId.setText(getTableValue(selectedRow, 0));
         setComboBoxValue(cbPatientId, getTableValue(selectedRow, 1));
         setComboBoxValue(cbClinicianId, getTableValue(selectedRow, 2));
@@ -245,18 +225,15 @@ public class AppointmentView extends JPanel {
                 return;
             }
         }
-        // If value not found, add it and select it
         if (!value.isEmpty()) {
             comboBox.addItem(value);
             comboBox.setSelectedItem(value);
         }
     }
 
-    // ============================================================
-    // ADD APPOINTMENT WITH VALIDATION
-    // ============================================================
+    // ADD APPOINTMENT
     private void addAppointment() {
-        // Validate required fields
+
         if (cbPatientId.getSelectedItem() == null || cbPatientId.getSelectedItem().toString().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Patient ID is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -271,8 +248,7 @@ public class AppointmentView extends JPanel {
             JOptionPane.showMessageDialog(this, "Appointment date is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        // Check if patient is trying to add appointment for someone else
+  
         if (controller.getCurrentUser().getRole().equals("patient")) {
             String selectedPatientId = (String) cbPatientId.getSelectedItem();
             String currentPatientId = controller.getCurrentUser().getId();
@@ -286,27 +262,25 @@ public class AppointmentView extends JPanel {
             }
         }
 
-        // ADDED VALIDATION CHECKS
         StringBuilder errors = new StringBuilder();
         
-        // Date validation
+        // validating dates 
         if (!ValidationUtils.isValidDate(txtDate.getText(), "yyyy-MM-dd") &&
             !ValidationUtils.isValidDate(txtDate.getText(), "dd/MM/yyyy")) {
             errors.append("- Appointment date must be in YYYY-MM-DD or DD/MM/YYYY format\n");
         }
         
-        // Time validation (HH:mm format)
+     // validate time format 
         String time = txtTime.getText().trim();
         if (!time.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")) {
             errors.append("- Time must be in HH:MM format (e.g., 09:30)\n");
         }
         
-        // Duration validation
+    // Duration validation
         if (!ValidationUtils.isValidNumber(txtDuration.getText())) {
             errors.append("- Duration must be a number\n");
         }
-        
-        // Show errors if any
+
         if (errors.length() > 0) {
             JOptionPane.showMessageDialog(this, 
                 "Please fix the following errors:\n\n" + errors.toString(),
@@ -333,19 +307,16 @@ public class AppointmentView extends JPanel {
 
         controller.addAppointment(a);
 
-        // Clear form and regenerate ID
         clearAppointmentForm();
     }
 
-    // ============================================================
-    // CLEAR APPOINTMENT FORM
-    // ============================================================
+// CLEAR APPOINTMENT FORM
+
     private void clearAppointmentForm() {
-        // Regenerate ID & timestamps
+   
         txtId.setText(controller.generateId());
         txtLastModified.setText(LocalDate.now().format(fmt));
-        
-        // Clear form fields (except dropdowns)
+
         txtDate.setText("");
         txtTime.setText("");
         txtDuration.setText("");
@@ -353,10 +324,7 @@ public class AppointmentView extends JPanel {
         txtReason.setText("");
         txtNotes.setText("");
     }
-
-    // ============================================================
-    // DELETE APPOINTMENT
-    // ============================================================
+//delete appointments 
     private void deleteAppointment() {
         int row = table.getSelectedRow();
         if (row < 0) {
@@ -365,8 +333,7 @@ public class AppointmentView extends JPanel {
         }
 
         String id = model.getValueAt(row, 0).toString();
-        
-        // Check if patient can delete this appointment
+
         if (controller.getCurrentUser().getRole().equals("patient")) {
             String patientIdInTable = model.getValueAt(row, 1).toString();
             String currentPatientId = controller.getCurrentUser().getId();
@@ -389,13 +356,10 @@ public class AppointmentView extends JPanel {
         
         if (confirm == JOptionPane.YES_OPTION) {
             controller.deleteById(id);
-            clearAppointmentForm(); // Clear form after deletion
+            clearAppointmentForm(); 
         }
     }
-
-    // ============================================================
-    // UPDATE APPOINTMENT
-    // ============================================================
+//update appointment 
     private void updateAppointment() {
         if (controller == null) return;
         
@@ -444,9 +408,6 @@ public class AppointmentView extends JPanel {
         clearAppointmentForm();
     }
 
-    // ============================================================
-    // SET CONTROLLER WITH ROLE-BASED PERMISSIONS
-    // ============================================================
     public void setController(AppointmentController controller) {
         this.controller = controller;
         if (controller != null) {
@@ -465,7 +426,7 @@ public class AppointmentView extends JPanel {
                 txtReason.setEditable(false);
                 txtNotes.setEditable(false);
             }
-            // Staff, clinicians, admin can edit all fields
+          
         }
     }
 }

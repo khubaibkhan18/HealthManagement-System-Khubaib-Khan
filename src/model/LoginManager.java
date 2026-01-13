@@ -1,7 +1,7 @@
 package model;
 
 public class LoginManager {
-    
+    //handles patient authentication by checking patient ID
     public static User authenticatePatient(String patientId, PatientRepository patientRepo) {
         System.out.println("Checking patient: " + patientId);
         Patient patient = patientRepo.findById(patientId);
@@ -29,7 +29,7 @@ public class LoginManager {
         System.out.println("Clinician not found");
         return null;
     }
-    
+    // Staff authentication searches throughstaff records
     public static User authenticateStaff(String staffId, StaffRepository staffRepo) {
         System.out.println("Checking staff: " + staffId);
         for (Staff staff : staffRepo.getAll()) {
@@ -57,8 +57,7 @@ public class LoginManager {
         if (title == null) return "gp";
         
         String lowerTitle = title.toLowerCase();
-        
-        // Simple detection
+
         if (lowerTitle.contains("nurse")) {
             return "nurse";
         }

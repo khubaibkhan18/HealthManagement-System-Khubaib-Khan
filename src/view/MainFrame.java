@@ -7,8 +7,9 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private User currentUser;
-    private StatusBarView statusBar;  // Changed to StatusBarView
+    private StatusBarView statusBar;  //bttotm status bar to show user info
     
+    //sets up the interface
     public MainFrame(PatientController pc,
                      ClinicianController cc,
                      AppointmentController ac,
@@ -18,15 +19,13 @@ public class MainFrame extends JFrame {
         
         super("Healthcare Management System - " + user.getName());
         this.currentUser = user;
-        
-        // Create main panel with BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
         
-        // Create tabbed pane
+        //Different Tabs
         JTabbedPane tabs = setupTabs(pc, cc, ac, prc, rc);
         mainPanel.add(tabs, BorderLayout.CENTER);
         
-        // Add status bar at bottom
+        // Status bar at bottom shows user info and system messages
         statusBar = new StatusBarView(user);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
         
@@ -35,11 +34,10 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 750);
         setLocationRelativeTo(null);
-        
-        // Test: Set a status message to confirm it's working
+
         statusBar.setStatus("System loaded successfully", "success");
     }
-    
+
     private JTabbedPane setupTabs(PatientController pc, ClinicianController cc,
                                   AppointmentController ac, PrescriptionController prc,
                                   ReferralController rc) {
@@ -48,48 +46,45 @@ public class MainFrame extends JFrame {
         
         System.out.println("Setting up interface for: " + role);
         
-        // ROLE-BASED TABS
+        // Patients only see their own data 
         if (role.equals("patient")) {
-            // Patient can: manage appointments, view prescriptions
             tabs.addTab("My Appointments", ac.getView());
             tabs.addTab("My Prescriptions", prc.getView());
             tabs.addTab("My Profile", pc.getView());
             
+        // Doctors get full clinical access
         } else if (role.equals("gp") || role.equals("specialist")) {
-            // GP/Specialist can: manage referrals, create prescriptions
             tabs.addTab("My Patients", pc.getView());
             tabs.addTab("Appointments", ac.getView());
             tabs.addTab("Prescriptions", prc.getView());
             tabs.addTab("Referrals", rc.getView());
             
+        // Nurses can only view prescriptions 
         } else if (role.equals("nurse")) {
-            // Nurse can only view prescriptions
             JPanel nursePanel = new JPanel(new BorderLayout());
             nursePanel.add(new JLabel("Prescription Viewer - Nurse Access", SwingConstants.CENTER), BorderLayout.NORTH);
             nursePanel.add(prc.getView(), BorderLayout.CENTER);
             tabs.addTab("View Prescriptions", nursePanel);
             
+        // Staff handle patient registration and appointments
         } else if (role.equals("staff")) {
-            // Staff can: manage appointments, register patients
             tabs.addTab("Register Patients", pc.getView());
             tabs.addTab("Manage Appointments", ac.getView());
             
-            // Staff can view but not edit prescriptions
             JPanel staffPrescriptions = new JPanel(new BorderLayout());
             staffPrescriptions.add(new JLabel("Prescription Viewer (Read-Only)", SwingConstants.CENTER), BorderLayout.NORTH);
             staffPrescriptions.add(prc.getView(), BorderLayout.CENTER);
             tabs.addTab("View Prescriptions", staffPrescriptions);
             
+        // Admins get complete system access
         } else if (role.equals("admin")) {
-            // Admin can do everything
             tabs.addTab("Patients", pc.getView());
             tabs.addTab("Clinicians", cc.getView());
             tabs.addTab("Appointments", ac.getView());
             tabs.addTab("Prescriptions", prc.getView());
             tabs.addTab("Referrals", rc.getView());
-            
+
         } else {
-            // Default fallback (all tabs - for debugging)
             tabs.addTab("Patients", pc.getView());
             tabs.addTab("Clinicians", cc.getView());
             tabs.addTab("Appointments", ac.getView());

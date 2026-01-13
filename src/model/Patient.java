@@ -41,14 +41,11 @@ public class Patient {
         this.gpSurgeryId = gpSurgeryId;
     }
 
-    // Backward compatibility for older code
     public String getName() {
         return getFullName();
     }
 
-    // ============================================================
-    // GETTERS
-    // ============================================================
+
     public String getId() { return id; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
@@ -66,9 +63,8 @@ public class Patient {
     public String getRegistrationDate() { return registrationDate; }
     public String getGpSurgeryId() { return gpSurgeryId; }
 
-    // ============================================================
     // SETTERS
-    // ============================================================
+
     public void setId(String id) { this.id = id; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public void setLastName(String lastName) { this.lastName = lastName; }

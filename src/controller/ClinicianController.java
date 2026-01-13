@@ -10,19 +10,15 @@ public class ClinicianController {
 
     public final ClinicianRepository repository;
     private final ClinicianView view;
-    private final User currentUser;  // ADDED FIELD
-
+    private final User currentUser;  
     public ClinicianController(ClinicianRepository repo, ClinicianView view, User user) {
         this.repository = repo;
         this.view = view;
-        this.currentUser = user;  // ADDED: Store user
+        this.currentUser = user; 
         this.view.setController(this);
         refresh();
     }
-    
-    // ============================================================
-    // GET CURRENT USER
-    // ============================================================
+ 
     public User getCurrentUser() {
         return currentUser;
     }
@@ -31,31 +27,23 @@ public class ClinicianController {
         return view;
     }
     
-    // ============================================================
-    // ID GENERATOR
-    // ============================================================
+    // Generate ID
     public String generateId() {
         return repository.generateNewId();
     }
 
-    // ============================================================
-    // REFRESH TABLE
-    // ============================================================
+
     public void refresh() {
         view.showClinicians(repository.getAll());
     }
 
-    // ============================================================
     // ADD CLINICIAN
-    // ============================================================
     public void addClinician(Clinician c) {
         repository.addAndAppend(c);
         refresh();
     }
 
-    // ============================================================
-    // DELETE CLINICIAN BY ID
-    // ============================================================
+    // DELETE CLINICIAN 
     public void deleteById(String id) {
         Clinician c = repository.findById(id);
         if (c != null) {

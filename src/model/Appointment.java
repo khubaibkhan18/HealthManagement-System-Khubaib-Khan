@@ -2,19 +2,19 @@ package model;
 
 public class Appointment {
 
-    private String id;                  // appointment_id
-    private String patientId;           // patient_id
-    private String clinicianId;         // clinician_id
-    private String facilityId;          // facility_id
-    private String appointmentDate;     // appointment_date  (e.g. 20/09/2025)
-    private String appointmentTime;     // appointment_time  (e.g. 09:00)
-    private String durationMinutes;     // duration_minutes  (e.g. 15)
-    private String appointmentType;     // appointment_type  (e.g. Routine Consultation)
-    private String status;              // status            (Scheduled, Cancelled, etc.)
-    private String reasonForVisit;      // reason_for_visit
+    private String id;                  // appointment id
+    private String patientId;           // patient id
+    private String clinicianId;         // clinician id
+    private String facilityId;          // facility id
+    private String appointmentDate;     // appointment date
+    private String appointmentTime;     // appointment time
+    private String durationMinutes;     // duration 
+    private String appointmentType;     // typappointment  
+    private String status;              // status            
+    private String reasonForVisit;      // reason for visit
     private String notes;               // notes
-    private String createdDate;         // created_date
-    private String lastModified;        // last_modified
+    private String createdDate;        
+    private String lastModified;        // last modified
 
     public Appointment() { }
 

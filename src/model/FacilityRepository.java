@@ -28,7 +28,6 @@ public class FacilityRepository {
         try {
             for (String[] row : CsvUtils.readCsv(csvPath)) {
 
-                // Read ALL columns correctly
                 String id            = row[0];
                 String name          = row[1];
                 String type          = row[2];
@@ -48,7 +47,7 @@ public class FacilityRepository {
 
                 String specialities = row[10];
 
-                // Create Facility object correctly
+                // Create Facility object
                 Facility f = new Facility(
                         id, name, type,
                         address, postcode, phone,

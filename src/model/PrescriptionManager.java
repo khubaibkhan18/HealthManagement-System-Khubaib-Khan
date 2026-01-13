@@ -18,6 +18,7 @@ public class PrescriptionManager {
         }
         return instance;
     }
+    //My Prescription Format 
     
     public void writePrescriptionText(Prescription p, Patient patient, Clinician clinician) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputPath, true))) {

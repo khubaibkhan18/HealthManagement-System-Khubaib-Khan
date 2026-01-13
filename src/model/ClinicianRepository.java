@@ -44,9 +44,7 @@ public class ClinicianRepository {
         }
     }
 
-    // ============================================================
-    // AUTO-ID: C001 → C002 → C003...
-    // ============================================================
+    // AUTO ID
     public String generateNewId() {
         int max = 0;
         for (Clinician c : clinicians) {
@@ -58,9 +56,6 @@ public class ClinicianRepository {
         return String.format("C%03d", max + 1);
     }
 
-    // ============================================================
-    // ADD + APPEND TO CSV
-    // ============================================================
     public void addAndAppend(Clinician c) {
         clinicians.add(c);
         try {
@@ -79,9 +74,8 @@ public class ClinicianRepository {
         return clinicians;
     }
 
-    // ============================================================
     // REMOVE
-    // ============================================================
+
     public void remove(Clinician c) {
         clinicians.remove(c);
     }

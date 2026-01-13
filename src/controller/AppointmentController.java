@@ -55,10 +55,10 @@ public class AppointmentController {
             // Patient can only see THEIR OWN appointments
             appointments = repo.getAppointmentsByPatientId(userId);
         } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
-            // Clinicians see appointments assigned to them
+            // Clinicians see appointments that are assigned to them
             appointments = repo.getAppointmentsByClinicianId(userId);
         } else {
-            // Staff, admin, etc. see all appointments
+            // Staff and admin see all appointments
             appointments = repo.getAll();
         }
         
@@ -79,7 +79,7 @@ public class AppointmentController {
             ids.add(userId);
             return ids;
         } else {
-            // Other roles see all patient IDs
+            // Others see all patient IDs
             return patientRepo.getAllIds();
         }
     }
@@ -94,7 +94,7 @@ public class AppointmentController {
             ids.add(userId);
             return ids;
         } else {
-            // Patients and other roles see all clinician IDs
+            // Patients and other roles see all clinicians
             return clinicianRepo.getAllIds();
         }
     }
@@ -104,7 +104,7 @@ public class AppointmentController {
     }
 
     public void addAppointment(Appointment a) {
-        // Validate patient can only add appointments for themselves
+        //patient can only add appointments for themselves
         if (currentUser.getRole().equals("patient") && 
             !a.getPatientId().equals(currentUser.getId())) {
             JOptionPane.showMessageDialog(view, 
@@ -121,7 +121,7 @@ public class AppointmentController {
     public void deleteById(String id) {
         Appointment a = repo.findById(id);
         if (a != null) {
-            // Validate patient can only delete their own appointments
+            //patients can only delete their own appointments
             if (currentUser.getRole().equals("patient") && 
                 !a.getPatientId().equals(currentUser.getId())) {
                 JOptionPane.showMessageDialog(view, 
@@ -135,9 +135,7 @@ public class AppointmentController {
         refreshAppointments();
     }
     
-    // ============================================================
     // UPDATE APPOINTMENT
-    // ============================================================
     public void updateAppointment(Appointment a) {
         // All roles except patient can update appointments
         if (currentUser.getRole().equals("patient")) {
@@ -152,10 +150,10 @@ public class AppointmentController {
         refreshAppointments();
     }
     
-    // Helper method to check if current user can delete an appointment
+    //check if current user can delete an appointment
     public boolean canDeleteAppointment(String appointmentId) {
         if (!currentUser.getRole().equals("patient")) {
-            return true; // Non-patients can delete
+            return true; 
         }
         
         Appointment a = repo.findById(appointmentId);

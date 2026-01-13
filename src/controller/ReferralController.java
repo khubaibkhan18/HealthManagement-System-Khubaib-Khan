@@ -52,30 +52,29 @@ public class ReferralController {
         List<Referral> filteredReferrals = new ArrayList<>();
         
         if (role.equals("patient")) {
-            // Patients see their own referrals
+            // Patients see their referrals
             for (Referral r : allReferrals) {
                 if (r.getPatientId().equals(userId)) {
                     filteredReferrals.add(r);
                 }
             }
         } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
-            // Clinicians see referrals they created (referring clinician)
+            // Clinicians see referrals 
             for (Referral r : allReferrals) {
                 if (r.getReferringClinicianId().equals(userId)) {
                     filteredReferrals.add(r);
                 }
             }
         } else {
-            // Staff/admin see all referrals
+            // Staff and admin see all referrals
             filteredReferrals = allReferrals;
         }
         
         view.showReferrals(filteredReferrals);
     }
 
-    // ---------------------------------------------
     // COMBOBOX DATA
-    // ---------------------------------------------
+
     public List<String> getPatientIds() {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
@@ -86,12 +85,10 @@ public class ReferralController {
             // Patients can only select themselves
             ids.add(userId);
         } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
-            // Clinicians see ALL patients (they need to see patients to create referrals)
             for (Patient p : patientRepo.getAll()) {
                 ids.add(p.getId());
             }
         } else {
-            // Staff/admin see all patients
             for (Patient p : patientRepo.getAll()) {
                 ids.add(p.getId());
             }
@@ -123,9 +120,6 @@ public class ReferralController {
         return ids;
     }
 
-    // ---------------------------------------------
-    // AUTO ID GENERATOR
-    // ---------------------------------------------
     public String getNextReferralId() {
         int max = 0;
         for (Referral r : referralManager.getAllReferrals()) {
@@ -141,9 +135,7 @@ public class ReferralController {
         return String.format("R%03d", next);
     }
 
-    // ---------------------------------------------
     // ADD REFERRAL
-    // ---------------------------------------------
     public void addReferral(Referral r) {
         // Clinicians can only create referrals where they are the referring clinician
         String role = currentUser.getRole();
@@ -159,14 +151,11 @@ public class ReferralController {
         refreshReferrals();
     }
 
-    // ============================================================
     // UPDATE REFERRAL
-    // ============================================================
     public void updateReferral(Referral updatedReferral) {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
         
-        // Check permissions
         if (role.equals("patient")) {
             return; // Patients cannot update referrals
         }
@@ -174,24 +163,20 @@ public class ReferralController {
         if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             // Clinicians can only update referrals they created
             if (!updatedReferral.getReferringClinicianId().equals(userId)) {
-                return; // Not their referral
+                return; 
             }
         }
         
-        // Update the referral using ReferralManager
         referralManager.updateReferral(updatedReferral);
         refreshReferrals();
     }
 
-    // ============================================================
     // DELETE REFERRAL
-    // ============================================================
     public void deleteReferral(String referralId) {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
-        
-        // Find the referral first to check permissions
-        // We need to get it from ReferralManager
+
+        // get referral from ReferralManager
         Referral referralToDelete = null;
         for (Referral r : referralManager.getAllReferrals()) {
             if (r.getId().equals(referralId)) {
@@ -201,10 +186,9 @@ public class ReferralController {
         }
         
         if (referralToDelete == null) {
-            return; // Referral not found
+            return; 
         }
         
-        // Check permissions
         if (role.equals("patient")) {
             return; // Patients cannot delete referrals
         }
@@ -212,11 +196,11 @@ public class ReferralController {
         if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             // Clinicians can only delete referrals they created
             if (!referralToDelete.getReferringClinicianId().equals(userId)) {
-                return; // Not their referral
+                return;
             }
         }
         
-        // Delete the referral using ReferralManager
+        // Delete 
         referralManager.deleteReferral(referralId);
         refreshReferrals();
     }

@@ -4,7 +4,7 @@ public class Facility {
 
     private String id;
     private String name;
-    private String type;               // GP Surgery / Hospital
+    private String type;               // GP, Surgery, Hospital
     private String address;
     private String postcode;
     private String phone;
@@ -34,7 +34,6 @@ public class Facility {
         this.specialities = specialities;
     }
 
-    // Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

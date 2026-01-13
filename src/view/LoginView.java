@@ -14,7 +14,7 @@ public class LoginView extends JPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
-        // Title
+     // Application title at top 
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         JLabel title = new JLabel("Healthcare Management System");
         title.setFont(new Font("Arial", Font.BOLD, 16));
@@ -23,7 +23,7 @@ public class LoginView extends JPanel {
         
         gbc.gridwidth = 1;
         
-        // Role selection
+        //User selects their role
         gbc.gridx = 0; gbc.gridy = 1;
         add(new JLabel("I am a:"), gbc);
         
@@ -33,7 +33,7 @@ public class LoginView extends JPanel {
         });
         add(roleCombo, gbc);
         
-        // ID field
+     //ID input field for authentication
         gbc.gridx = 0; gbc.gridy = 2;
         add(new JLabel("Enter ID:"), gbc);
         
@@ -41,12 +41,11 @@ public class LoginView extends JPanel {
         idField = new JTextField(15);
         add(idField, gbc);
         
-        // Login button
+        //Main login button
         gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
         btnLogin = new JButton("Login");
         add(btnLogin, gbc);
-        
-        // Instructions
+
         gbc.gridy = 4;
         JTextArea instructions = new JTextArea(
             "Sample IDs:\n" +

@@ -36,7 +36,6 @@ public class Clinician {
         this.startDate = startDate;
     }
 
-    // ---- Getters ----
     public String getId() { return id; }
     public String getTitle() { return title; }
     public String getFirstName() { return firstName; }

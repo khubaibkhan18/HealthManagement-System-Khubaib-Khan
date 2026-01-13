@@ -66,13 +66,13 @@ public class PrescriptionController {
         List<Prescription> prescriptions;
         
         if (role.equals("patient")) {
-            // Patient can only see THEIR OWN prescriptions
+            
             prescriptions = repository.getPrescriptionsByPatientId(userId);
         } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
-            // Clinicians see prescriptions they created
+            
             prescriptions = repository.getPrescriptionsByClinicianId(userId);
         } else {
-            // Staff, admin, etc. see all prescriptions
+
             prescriptions = repository.getAll();
         }
         
@@ -80,7 +80,7 @@ public class PrescriptionController {
         view.setNextId(repository.generateNewId());
     }
 
-    // Expose lists for view
+    // lists for view
     public List<String> getPatientIds() {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
@@ -127,17 +127,17 @@ public class PrescriptionController {
         return ids;
     }
 
-    // ---------- CRUD called by view ----------
+    //CRUD 
     public void addPrescription(Prescription p) {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
         
-        // Patients cannot add prescriptions
+        // Patients can't add prescriptions
         if (role.equals("patient")) {
             return;
         }
         
-        // Clinicians can only add prescriptions for themselves
+        // Clinicians can add prescriptions
         if ((role.equals("gp") || role.equals("specialist") || role.equals("nurse")) &&
             !p.getClinicianId().equals(userId)) {
             return;
@@ -145,15 +145,15 @@ public class PrescriptionController {
         
         repository.addAndAppend(p);
         
-        // Generate prescription text file
+        //prescription text file
         Patient patient = patientRepository.findById(p.getPatientId());
         Clinician clinician = clinicianRepository.findById(p.getClinicianId());
         
-        // ADDED NULL CHECK
+        // NULL CHECK
         if (patient != null && clinician != null) {
             prescriptionManager.writePrescriptionText(p, patient, clinician);
         } else {
-            // Log or handle the error
+
             System.err.println("Could not find patient or clinician for prescription " + p.getId());
         }
         
@@ -164,7 +164,7 @@ public class PrescriptionController {
         String role = currentUser.getRole();
         String userId = currentUser.getId();
         
-        // Patients cannot update prescriptions
+        // Patients can't update prescriptions
         if (role.equals("patient")) {
             return;
         }
@@ -187,7 +187,6 @@ public class PrescriptionController {
             return;
         }
         
-        // Clinicians can delete their own prescriptions
         if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             Prescription p = null;
             for (Prescription pres : repository.getAll()) {
@@ -197,12 +196,11 @@ public class PrescriptionController {
                 }
             }
             
-            // Check if prescription belongs to this clinician
             if (p != null && p.getClinicianId().equals(currentUser.getId())) {
                 repository.removeById(id);
             }
         } else {
-            // Staff/admin can delete any
+            // Staff and admin can delete any
             repository.removeById(id);
         }
         

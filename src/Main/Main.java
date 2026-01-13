@@ -9,7 +9,7 @@ public class Main {
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Show Login Screen
+            // the login screen
             showLoginScreen();
         });
     }
@@ -24,7 +24,7 @@ public class Main {
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
         
-        // Handle Login Button
+        // the login button
         loginView.getLoginButton().addActionListener(e -> {
             String role = loginView.getSelectedRole();
             String id = loginView.getUserId();
@@ -34,14 +34,14 @@ public class Main {
                 return;
             }
             
-            // Load repositories
+            // Loading repositories
             PatientRepository patientRepo = new PatientRepository("src/data/patients.csv");
             ClinicianRepository clinicianRepo = new ClinicianRepository("src/data/clinicians.csv");
             StaffRepository staffRepo = new StaffRepository("src/data/staff.csv");
             
             User user = null;
             
-            // Authenticate based on role
+            // Authentication
             switch (role.toLowerCase()) {
                 case "patient":
                     user = LoginManager.authenticatePatient(id, patientRepo);
@@ -51,7 +51,6 @@ public class Main {
                 case "specialist":
                 case "nurse":
                     user = LoginManager.authenticateClinician(id, clinicianRepo);
-                    // Accept any clinician role - don't check exact match
                     break;
                     
                 case "staff":
@@ -65,8 +64,8 @@ public class Main {
             
             if (user != null) {
                 System.out.println("Login successful: " + user);
-                loginFrame.dispose(); // Close login window
-                openMainApplication(user); // Open main app
+                loginFrame.dispose(); // close the login window
+                openMainApplication(user); // Open the app
             } else {
                 loginView.showError("Invalid ID: " + id + 
                     "\n\nTry these IDs:\n• Patient: P001\n• GP: C001\n• Specialist: C005\n• Nurse: C009\n• Staff: ST001\n• Admin: ADM001");
@@ -78,9 +77,7 @@ public class Main {
         System.out.println("Opening application for: " + user.getRole() + " - " + user.getName());
         
         try {
-            // ================================
             // REPOSITORIES
-            // ================================
             PatientRepository pr = new PatientRepository("src/data/patients.csv");
             ClinicianRepository cr = new ClinicianRepository("src/data/clinicians.csv");
             FacilityRepository fr = new FacilityRepository("src/data/facilities.csv");
@@ -88,29 +85,25 @@ public class Main {
             PrescriptionRepository pResR = new PrescriptionRepository("src/data/prescriptions.csv");
             ReferralRepository rR = new ReferralRepository("src/data/referrals.csv");
 
-            // ================================
-            // REFERRAL MANAGER (Singleton)
-            // ================================
+
+            // REFERRAL MANAGER
             ReferralManager rm = ReferralManager.getInstance(
                     rR, pr, cr, fr,
                     "src/data/referrals_output.txt", user
             );
 
-            // ================================
             // VIEWS
-            // ================================
             PatientView pv = new PatientView();
             ClinicianView cv = new ClinicianView();
             AppointmentView av = new AppointmentView();
             PrescriptionView presV = new PrescriptionView();
             ReferralView rv = new ReferralView();
 
-            // ================================
             // CONTROLLERS
-            // ================================
+
             PatientController pc = new PatientController(
                     pr,   // PatientRepository
-                    ar,   // AppointmentRepository - ADDED THIS
+                    ar,   // AppointmentRepository 
                     pv,   // PatientView
                     user  // Current User
             );
@@ -123,7 +116,7 @@ public class Main {
                     cr,   // ClinicianRepository
                     fr,   // FacilityRepository
                     av,   // AppointmentView
-                    user  // Current User
+                    user  // User
             );
 
             PrescriptionController prc = new PrescriptionController(
@@ -145,15 +138,11 @@ public class Main {
                     user  // Current User
             );
 
-            // ================================
             // MAIN FRAME
-            // ================================
             MainFrame frame = new MainFrame(pc, cc, ac, prc, rc, user);
             frame.setVisible(true);
             
-            // ================================
-            // WELCOME MESSAGE
-            // ================================
+            // THE WELCOME MESSAGE
             JOptionPane.showMessageDialog(frame,
                 "Welcome, " + user.getName() + "!\n" +
                 "Role: " + user.getRole().toUpperCase() + "\n" +
@@ -162,7 +151,7 @@ public class Main {
                 "Welcome to Healthcare Management System",
                 JOptionPane.INFORMATION_MESSAGE);
 
-            // Update status bar
+            // Updating the status bar
             frame.getStatusBar().setStatus("Welcome, " + user.getName() + "!", "success");
 
         } catch (Exception e) {

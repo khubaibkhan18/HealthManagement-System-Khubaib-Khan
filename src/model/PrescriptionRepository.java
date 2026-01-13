@@ -16,18 +16,14 @@ public class PrescriptionRepository {
         load();
     }
 
-    // ============================================================
-    // LOAD ALL PRESCRIPTIONS SAFELY
-    // ============================================================
+    // load all prescriptions 
+
     private void load() {
         try {
             for (String[] row : CsvUtils.readCsv(csvPath)) {
 
-                // Skip header row
                 if (row.length == 0 || row[0].equalsIgnoreCase("prescription_id"))
                     continue;
-
-                // Guarantee 15 columns to prevent ArrayIndexOutOfBounds
                 String[] safe = new String[COLUMN_COUNT];
                 for (int i = 0; i < COLUMN_COUNT; i++) {
                     safe[i] = (i < row.length) ? row[i] : "";
@@ -63,9 +59,7 @@ public class PrescriptionRepository {
         return prescriptions;
     }
 
-    // ============================================================
-    // AUTO-GENERATE RX IDs
-    // ============================================================
+ //Generating IDS
     public String generateNewId() {
         int max = 0;
         for (Prescription p : prescriptions) {
@@ -80,9 +74,8 @@ public class PrescriptionRepository {
         return String.format("RX%03d", max + 1);
     }
 
-    // ============================================================
-    // DROPDOWN OPTIONS
-    // ============================================================
+    // DROPDOWN 
+
     public List<String> getMedicationOptions() {
         Set<String> meds = new TreeSet<>();
         for (Prescription p : prescriptions) {
@@ -101,9 +94,6 @@ public class PrescriptionRepository {
         return new ArrayList<>(pharms);
     }
 
-    // ============================================================
-    // ADD + APPEND TO CSV
-    // ============================================================
     public void addAndAppend(Prescription p) {
 
         prescriptions.add(p);
@@ -132,9 +122,6 @@ public class PrescriptionRepository {
         }
     }
 
-    // ============================================================
-    // UPDATE IN-MEMORY ENTRY (no CSV rewrite)
-    // ============================================================
     public void update(Prescription p) {
         for (int i = 0; i < prescriptions.size(); i++) {
             if (prescriptions.get(i).getId().equals(p.getId())) {
@@ -149,9 +136,8 @@ public class PrescriptionRepository {
         // No CSV rewrite—acceptable for coursework
     }
     
-    // ============================================================
-    // FILTERING METHODS FOR ROLE-BASED ACCESS
-    // ============================================================
+ // FILTERING METHODS FOR ROLE-BASED ACCESS
+
     public List<Prescription> getPrescriptionsByPatientId(String patientId) {
         List<Prescription> filtered = new ArrayList<>();
         for (Prescription p : prescriptions) {

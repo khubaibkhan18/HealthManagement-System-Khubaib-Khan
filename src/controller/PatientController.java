@@ -49,14 +49,13 @@ public class PatientController {
             // Clinicians can only see patients who have appointments with them
             patients = getPatientsByClinicianId(userId);
         } else {
-            // Other roles (staff, admin) see all patients
+            // Other roles see all patients
             patients = repository.getAll();
         }
         
         view.showPatients(patients);
     }
     
-    // Helper method to return a single patient as a list
     private List<Patient> getPatientByIdAsList(String patientId) {
         List<Patient> singlePatientList = new ArrayList<>();
         Patient patient = repository.findById(patientId);
@@ -69,10 +68,9 @@ public class PatientController {
     private List<Patient> getPatientsByClinicianId(String clinicianId) {
         List<Patient> clinicianPatients = new ArrayList<>();
         
-        // Get all appointments for this clinician
+        // Getting all appointments and patient IDs for this clinician
         List<Appointment> clinicianAppointments = appointmentRepository.getAppointmentsByClinicianId(clinicianId);
         
-        // Get unique patient IDs from these appointments
         List<String> patientIds = new ArrayList<>();
         for (Appointment a : clinicianAppointments) {
             String patientId = a.getPatientId();
@@ -81,7 +79,6 @@ public class PatientController {
             }
         }
         
-        // Get patient objects for these IDs
         for (String patientId : patientIds) {
             Patient p = repository.findById(patientId);
             if (p != null) {
@@ -93,7 +90,7 @@ public class PatientController {
     }
 
     public void addPatient(Patient p) {
-        // Only staff/admin can add patients (not clinicians or patients)
+        // Only staff and admin can add or delete patients 
         String role = currentUser.getRole();
         if (role.equals("patient") || role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             return;
@@ -104,7 +101,6 @@ public class PatientController {
     }
 
     public void deletePatient(Patient p) {
-        // Only staff/admin can delete patients (not clinicians or patients)
         String role = currentUser.getRole();
         if (role.equals("patient") || role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
             return;
@@ -118,9 +114,7 @@ public class PatientController {
         return repository.findById(id);
     }
 
-    // ============================================================
-    // UPDATE PATIENT WITH ROLE-BASED PERMISSIONS
-    // ============================================================
+    // UPDATE PATIENT RECORDS
     public void updatePatient(Patient updatedPatient) {
         String role = currentUser.getRole();
         if (role.equals("patient") || role.equals("gp") || 

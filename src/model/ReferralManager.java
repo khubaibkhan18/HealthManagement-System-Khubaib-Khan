@@ -55,9 +55,7 @@ public class ReferralManager {
         return referralRepository.getAll();
     }
 
-    // ============================================================
-    // FILTERING METHOD FOR PATIENTS
-    // ============================================================
+ // Filtering patients 
     public List<Referral> getReferralsByPatientId(String patientId) {
         List<Referral> filtered = new ArrayList<>();
         for (Referral r : referralRepository.getAll()) {
@@ -67,32 +65,19 @@ public class ReferralManager {
         }
         return filtered;
     }
-
-    // ============================================================
-    // DELETE REFERRAL
-    // ============================================================
+    // delete referral
     public void deleteReferral(String referralId) {
-        // Remove from repository
         referralRepository.deleteById(referralId);
-        
-        // Update the text file
         rewriteTextFile();
     }
-    
-    // ============================================================
-    // UPDATE REFERRAL
-    // ============================================================
+    // Updating the referral
     public void updateReferral(Referral updatedReferral) {
-        // Update in repository
+
         referralRepository.update(updatedReferral);
-        
-        // Update the text file
         rewriteTextFile();
     }
 
-    /**
-     * Write referral to text file showing full details.
-     */
+//Write referral to text file showing full details 
     private void writeReferralText(Referral r) {
         Patient patient = patientRepository.findById(r.getPatientId());
         Clinician referringClinician = clinicianRepository.findById(r.getReferringClinicianId());
@@ -112,7 +97,7 @@ public class ReferralManager {
             bw.write("Referral ID: " + r.getId());
             bw.newLine();
 
-            // Referring Clinician
+
             if (referringClinician != null) {
                 bw.write("Referring Clinician: " 
                     + referringClinician.getFullName()
@@ -121,7 +106,6 @@ public class ReferralManager {
                 bw.newLine();
             }
 
-            // Referred-To Clinician
             if (referredToClinician != null) {
                 bw.write("Referred To: " 
                     + referredToClinician.getFullName()
@@ -130,7 +114,6 @@ public class ReferralManager {
                 bw.newLine();
             }
 
-            // Facilities
             if (referringFacility != null) {
                 bw.write("Referring Facility: " + referringFacility.getName() +
                          " (" + referringFacility.getType() + ")");
@@ -142,8 +125,7 @@ public class ReferralManager {
                          " (" + referredToFacility.getType() + ")");
                 bw.newLine();
             }
-
-            // Dates, urgency, reason
+    // Dates, urgency, reason
             bw.write("Referral Date: " + r.getReferralDate());
             bw.newLine();
 
@@ -159,13 +141,11 @@ public class ReferralManager {
             bw.write("Status: " + r.getStatus());
             bw.newLine();
 
-            // Clinical Summary
             bw.write("Clinical Summary:");
             bw.newLine();
             bw.write(r.getClinicalSummary());
             bw.newLine();
 
-            // Notes
             bw.write("Notes:");
             bw.newLine();
             bw.write(r.getNotes());
@@ -185,18 +165,14 @@ public class ReferralManager {
             System.err.println("Failed to write referral text: " + ex.getMessage());
         }
     }
-    
-    // ============================================================
-    // HELPER METHOD TO REWRITE TEXT FILE
-    // ============================================================
+
     private void rewriteTextFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(referralTextPath, false))) {
-            // Write header
+            //header
             bw.write("==============================================\n");
             bw.write("            REFERRAL SUMMARY REPORT           \n");
             bw.write("==============================================\n\n");
-            
-            // Write all current referrals
+
             for (Referral r : referralRepository.getAll()) {
                 writeReferralToFile(bw, r);
             }

@@ -2,7 +2,6 @@ package view;
 
 import controller.PrescriptionController;
 import model.Prescription;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -13,178 +12,140 @@ import java.util.List;
 public class PrescriptionView extends JPanel {
 
     private PrescriptionController controller;
-
     private JTable table;
     private DefaultTableModel model;
 
+    // Form fields
     private JLabel lblId;
-
-    private JComboBox<String> cbPatientId;
-    private JComboBox<String> cbClinicianId;
-    private JComboBox<String> cbDrug;
-    private JComboBox<String> cbPharmacy;
-    private JComboBox<String> cbStatus;
-    private JComboBox<String> cbAppointmentId;
-
-    private JTextField txtPrescDate;
-    private JTextField txtDosage;
-    private JTextField txtFrequency;
-    private JTextField txtDuration;
-    private JTextField txtQuantity;
-    private JTextField txtIssueDate;
-    private JTextField txtCollectionDate;
-
+    private JComboBox<String> cbPatientId, cbClinicianId, cbDrug, cbPharmacy, cbStatus, cbAppointmentId;
+    private JTextField txtPrescDate, txtDosage, txtFrequency, txtDuration, txtQuantity, txtIssueDate, txtCollectionDate;
     private JTextArea txtInstructions;
-
-    private JButton btnAdd;
-    private JButton btnUpdate;
-    private JButton btnDelete;
+    private JButton btnAdd, btnUpdate, btnDelete;
 
     private static final String DATE_PATTERN = "yyyy-MM-dd";
     private final SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN);
 
     public PrescriptionView() {
-
-        setLayout(new BorderLayout(15, 15));
+        setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // ============================================================
-        // TABLE
-        // ============================================================
+        // Table showing prescription list
         model = new DefaultTableModel(
-                new Object[]{
-                        "ID", "Patient", "Clinician", "Appt",
-                        "Presc Date", "Drug", "Dosage", "Freq",
-                        "Duration", "Qty", "Instructions",
-                        "Pharmacy", "Status", "Issue", "Collected"
-                }, 0
-        );
+                new Object[]{"ID", "Patient", "Clinician", "Appt", "Presc Date", "Drug", "Dosage", 
+                           "Freq", "Duration", "Qty", "Instructions", "Pharmacy", "Status", "Issue", "Collected"}, 0);
         table = new JTable(model);
         table.setRowHeight(22);
-        add(new JScrollPane(table), BorderLayout.SOUTH);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        JPanel formPanel = createFormPanel();
+        add(formPanel, BorderLayout.EAST);
 
-        // ============================================================
-        // FORM
-        // ============================================================
-        JPanel form = new JPanel(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.insets = new Insets(6, 8, 6, 8);
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.weightx = 0.5;
-
-        lblId = new JLabel("RX001");
-
-        cbPatientId    = new JComboBox<>();
-        cbClinicianId  = new JComboBox<>();
-        cbDrug         = new JComboBox<>();
-        cbPharmacy     = new JComboBox<>();
-        cbAppointmentId = new JComboBox<>();
-
-        cbStatus = new JComboBox<>(new String[]{
-                "PENDING",
-                "ISSUED",
-                "COLLECTED",
-                "CANCELLED",
-                "REJECTED"
-        });
-        cbStatus.setFont(new Font("SansSerif", Font.PLAIN, 12));
-
-        txtPrescDate      = new JTextField();
-        txtDosage         = new JTextField();
-        txtFrequency      = new JTextField();
-        txtDuration       = new JTextField();
-        txtQuantity       = new JTextField();
-        txtIssueDate      = new JTextField();
-        txtCollectionDate = new JTextField();
-
-        txtInstructions = new JTextArea(3, 20);
-        txtInstructions.setLineWrap(true);
-        txtInstructions.setWrapStyleWord(true);
-
-        int row = 0;
-        addPair(form, gc, row++, "Prescription ID:", lblId,
-                "Patient ID:", cbPatientId);
-
-        addPair(form, gc, row++, "Clinician ID:", cbClinicianId,
-                "Appointment ID:", cbAppointmentId);
-
-        addPair(form, gc, row++, "Prescription Date (yyyy-MM-dd):", txtPrescDate,
-                "Drug:", cbDrug);
-
-        addPair(form, gc, row++, "Dosage:", txtDosage,
-                "Frequency:", txtFrequency);
-
-        addPair(form, gc, row++, "Duration (days):", txtDuration,
-                "Quantity:", txtQuantity);
-
-        addPair(form, gc, row++, "Pharmacy:", cbPharmacy,
-                "Status:", cbStatus);
-
-        addPair(form, gc, row++, "Issue Date (yyyy-MM-dd):", txtIssueDate,
-                "Collection Date (yyyy-MM-dd):", txtCollectionDate);
-
-        // Instructions field
-        gc.gridy = row;
-        gc.gridx = 0;
-        gc.gridwidth = 1;
-        form.add(new JLabel("Instructions:"), gc);
-
-        gc.gridx = 1;
-        gc.gridwidth = 3;
-        form.add(new JScrollPane(txtInstructions), gc);
-
-        add(form, BorderLayout.CENTER);
-
-        // ============================================================
-        // BUTTONS
-        // ============================================================
-        btnAdd = new JButton("Add");
-        btnUpdate = new JButton("Update Selected");
-        btnDelete = new JButton("Delete Selected");
-
-        btnAdd.addActionListener(e -> onAdd());
-        btnUpdate.addActionListener(e -> onUpdate());
-        btnDelete.addActionListener(e -> onDelete());
-
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        btnPanel.add(btnAdd);
-        btnPanel.add(btnUpdate);
-        btnPanel.add(btnDelete);
-
+     //Buttons at top
+        JPanel btnPanel = createButtonPanel();
         add(btnPanel, BorderLayout.NORTH);
 
+        // Load selected row into form when clicked
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) loadSelectedRowIntoForm();
         });
     }
 
-    private void addPair(JPanel panel, GridBagConstraints gc, int row,
-                         String label1, JComponent field1,
-                         String label2, JComponent field2) {
+    private JPanel createFormPanel() {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(BorderFactory.createTitledBorder("Prescription Details"));
+        panel.setPreferredSize(new Dimension(400, 600));
 
-        gc.gridy = row;
+        lblId = new JLabel("RX001");
 
-        gc.gridx = 0;
-        panel.add(new JLabel(label1), gc);
-        gc.gridx = 1;
-        panel.add(field1, gc);
+        cbPatientId = new JComboBox<>();
+        cbClinicianId = new JComboBox<>();
+        cbDrug = new JComboBox<>();
+        cbPharmacy = new JComboBox<>();
+        cbAppointmentId = new JComboBox<>();
+        cbStatus = new JComboBox<>(new String[]{"PENDING", "ISSUED", "COLLECTED", "CANCELLED", "REJECTED"});
 
-        gc.gridx = 2;
-        panel.add(new JLabel(label2), gc);
-        gc.gridx = 3;
-        panel.add(field2, gc);
+        txtPrescDate = new JTextField();
+        txtDosage = new JTextField();
+        txtFrequency = new JTextField();
+        txtDuration = new JTextField();
+        txtQuantity = new JTextField();
+        txtIssueDate = new JTextField();
+        txtCollectionDate = new JTextField();
+        txtInstructions = new JTextArea(3, 15);
+        txtInstructions.setLineWrap(true);
+
+        // Add form components in pairs
+        panel.add(new JLabel("Prescription ID:"));
+        panel.add(lblId);
+        
+        panel.add(new JLabel("Patient ID:"));
+        panel.add(cbPatientId);
+        
+        panel.add(new JLabel("Clinician ID:"));
+        panel.add(cbClinicianId);
+        
+        panel.add(new JLabel("Appointment ID:"));
+        panel.add(cbAppointmentId);
+        
+        panel.add(new JLabel("Prescription Date:"));
+        panel.add(txtPrescDate);
+        
+        panel.add(new JLabel("Drug:"));
+        panel.add(cbDrug);
+        
+        panel.add(new JLabel("Dosage:"));
+        panel.add(txtDosage);
+        
+        panel.add(new JLabel("Frequency:"));
+        panel.add(txtFrequency);
+        
+        panel.add(new JLabel("Duration (days):"));
+        panel.add(txtDuration);
+        
+        panel.add(new JLabel("Quantity:"));
+        panel.add(txtQuantity);
+        
+        panel.add(new JLabel("Pharmacy:"));
+        panel.add(cbPharmacy);
+        
+        panel.add(new JLabel("Status:"));
+        panel.add(cbStatus);
+        
+        panel.add(new JLabel("Issue Date:"));
+        panel.add(txtIssueDate);
+        
+        panel.add(new JLabel("Collection Date:"));
+        panel.add(txtCollectionDate);
+        
+        panel.add(new JLabel("Instructions:"));
+        panel.add(new JScrollPane(txtInstructions));
+
+        return panel;
     }
 
-    // ============================================================
-    // DISABLE EDITING FOR PATIENTS
-    // ============================================================
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        
+        btnAdd = new JButton("Add");
+        btnUpdate = new JButton("Update");
+        btnDelete = new JButton("Delete");
+        
+        btnAdd.addActionListener(e -> onAdd());
+        btnUpdate.addActionListener(e -> onUpdate());
+        btnDelete.addActionListener(e -> onDelete());
+        
+        panel.add(btnAdd);
+        panel.add(btnUpdate);
+        panel.add(btnDelete);
+        
+        return panel;
+    }
+
+    // Disable editing for patients 
     private void disableEditingForPatient() {
-        // Hide all buttons for patients
         btnAdd.setVisible(false);
         btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
-        // Disable all form fields for patients
         cbPatientId.setEnabled(false);
         cbClinicianId.setEnabled(false);
         cbDrug.setEnabled(false);
@@ -201,20 +162,15 @@ public class PrescriptionView extends JPanel {
         txtCollectionDate.setEditable(false);
         txtInstructions.setEditable(false);
         
-        // Hide the ID label since patients can't add
         lblId.setVisible(false);
     }
 
-    // ============================================================
-    // DISABLE EDITING FOR STAFF
-    // ============================================================
+    // Disable editing for staff
     private void disableEditingForStaff() {
-        // Hide all buttons for staff
         btnAdd.setVisible(false);
         btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
-        // Disable all form fields for staff
         cbPatientId.setEnabled(false);
         cbClinicianId.setEnabled(false);
         cbDrug.setEnabled(false);
@@ -231,13 +187,9 @@ public class PrescriptionView extends JPanel {
         txtCollectionDate.setEditable(false);
         txtInstructions.setEditable(false);
         
-        // Hide the ID label since staff can't add prescriptions
         lblId.setVisible(false);
     }
 
-    // ============================================================
-    // Controller Hooks
-    // ============================================================
     public void setController(PrescriptionController controller) {
         this.controller = controller;
         if (controller != null) {
@@ -245,17 +197,13 @@ public class PrescriptionView extends JPanel {
             if (role.equals("patient")) {
                 disableEditingForPatient();
             } else if (role.equals("staff")) {
-                disableEditingForStaff(); // ADD THIS
+                disableEditingForStaff();
             }
         }
     }
 
-    public void populateDropdowns(List<String> patientIds,
-                                  List<String> clinicianIds,
-                                  List<String> drugs,
-                                  List<String> pharmacies,
-                                  List<String> appointmentIds) {
-
+    public void populateDropdowns(List<String> patientIds, List<String> clinicianIds,
+                                  List<String> drugs, List<String> pharmacies, List<String> appointmentIds) {
         cbPatientId.removeAllItems();
         for (String id : patientIds) cbPatientId.addItem(id);
 
@@ -280,109 +228,74 @@ public class PrescriptionView extends JPanel {
         model.setRowCount(0);
         for (Prescription p : list) {
             model.addRow(new Object[]{
-                    p.getId(),
-                    p.getPatientId(),
-                    p.getClinicianId(),
-                    p.getAppointmentId(),
-                    p.getPrescriptionDate(),
-                    p.getMedication(),
-                    p.getDosage(),
-                    p.getFrequency(),
-                    p.getDurationDays(),
-                    p.getQuantity(),
-                    p.getInstructions(),
-                    p.getPharmacyName(),
-                    p.getStatus(),
-                    p.getIssueDate(),
-                    p.getCollectionDate()
+                p.getId(), p.getPatientId(), p.getClinicianId(), p.getAppointmentId(),
+                p.getPrescriptionDate(), p.getMedication(), p.getDosage(), p.getFrequency(),
+                p.getDurationDays(), p.getQuantity(), p.getInstructions(), p.getPharmacyName(),
+                p.getStatus(), p.getIssueDate(), p.getCollectionDate()
             });
         }
     }
 
-    // ============================================================
-    // ADD
-    // ============================================================
     private void onAdd() {
         if (controller == null) return;
-
         String errors = validateForm();
         if (!errors.isEmpty()) {
-            JOptionPane.showMessageDialog(this, errors,
-                    "Validation error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, errors, "Validation error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         Prescription p = buildFromForm(lblId.getText());
         controller.addPrescription(p);
-        clearFormButKeepIds();
+        clearForm();
     }
 
-    // ============================================================
-    // UPDATE
-    // ============================================================
     private void onUpdate() {
         if (controller == null) return;
-
         int row = table.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Select a row to update.");
             return;
         }
-
         String errors = validateForm();
         if (!errors.isEmpty()) {
-            JOptionPane.showMessageDialog(this, errors,
-                    "Validation error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, errors, "Validation error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         String id = lblId.getText();
         Prescription p = buildFromForm(id);
         controller.updatePrescription(p);
     }
 
-    // ============================================================
-    // DELETE
-    // ============================================================
     private void onDelete() {
         if (controller == null) return;
-
         int row = table.getSelectedRow();
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Select a row to delete.");
             return;
         }
-
         String id = model.getValueAt(row, 0).toString();
         controller.deleteById(id);
     }
 
-    // ============================================================
-    // Build Model from Form
-    // ============================================================
     private Prescription buildFromForm(String id) {
         return new Prescription(
-                id,
-                (String) cbPatientId.getSelectedItem(),
-                (String) cbClinicianId.getSelectedItem(),
-                (String) cbAppointmentId.getSelectedItem(),
-                txtPrescDate.getText().trim(),
-                (String) cbDrug.getSelectedItem(),
-                txtDosage.getText().trim(),
-                txtFrequency.getText().trim(),
-                txtDuration.getText().trim(),
-                txtQuantity.getText().trim(),
-                txtInstructions.getText().trim(),
-                (String) cbPharmacy.getSelectedItem(),
-                (String) cbStatus.getSelectedItem(),
-                txtIssueDate.getText().trim(),
-                txtCollectionDate.getText().trim()
+            id,
+            (String) cbPatientId.getSelectedItem(),
+            (String) cbClinicianId.getSelectedItem(),
+            (String) cbAppointmentId.getSelectedItem(),
+            txtPrescDate.getText().trim(),
+            (String) cbDrug.getSelectedItem(),
+            txtDosage.getText().trim(),
+            txtFrequency.getText().trim(),
+            txtDuration.getText().trim(),
+            txtQuantity.getText().trim(),
+            txtInstructions.getText().trim(),
+            (String) cbPharmacy.getSelectedItem(),
+            (String) cbStatus.getSelectedItem(),
+            txtIssueDate.getText().trim(),
+            txtCollectionDate.getText().trim()
         );
     }
 
-    // ============================================================
-    // Load selected table row → form
-    // ============================================================
     private void loadSelectedRowIntoForm() {
         int row = table.getSelectedRow();
         if (row < 0) return;
@@ -390,7 +303,6 @@ public class PrescriptionView extends JPanel {
         lblId.setText(model.getValueAt(row, 0).toString());
         cbPatientId.setSelectedItem(model.getValueAt(row, 1));
         cbClinicianId.setSelectedItem(model.getValueAt(row, 2));
-
         cbAppointmentId.setSelectedItem(model.getValueAt(row, 3));
         txtPrescDate.setText(value(row, 4));
         cbDrug.setSelectedItem(model.getValueAt(row, 5));
@@ -410,44 +322,27 @@ public class PrescriptionView extends JPanel {
         return v == null ? "" : v.toString();
     }
 
-    // ============================================================
-    // VALIDATION
-    // ============================================================
     private String validateForm() {
         StringBuilder sb = new StringBuilder();
-
-        if (cbPatientId.getSelectedItem() == null)
-            sb.append("- Patient ID is required.\n");
-
-        if (cbClinicianId.getSelectedItem() == null)
-            sb.append("- Clinician ID is required.\n");
-
-        if (cbDrug.getSelectedItem() == null)
-            sb.append("- Drug must be selected.\n");
-
-        if (txtDosage.getText().trim().isEmpty())
-            sb.append("- Dosage is required.\n");
-
+        if (cbPatientId.getSelectedItem() == null) sb.append("- Patient ID is required.\n");
+        if (cbClinicianId.getSelectedItem() == null) sb.append("- Clinician ID is required.\n");
+        if (cbDrug.getSelectedItem() == null) sb.append("- Drug must be selected.\n");
+        if (txtDosage.getText().trim().isEmpty()) sb.append("- Dosage is required.\n");
+        
         if (!txtDuration.getText().trim().isEmpty()) {
             try { Integer.parseInt(txtDuration.getText().trim()); }
-            catch (NumberFormatException e) {
-                sb.append("- Duration must be a number.\n");
-            }
+            catch (NumberFormatException e) { sb.append("- Duration must be a number.\n"); }
         }
-
+        
         if (!txtQuantity.getText().trim().isEmpty()) {
             try { Integer.parseInt(txtQuantity.getText().trim()); }
-            catch (NumberFormatException e) {
-                sb.append("- Quantity must be a number.\n");
-            }
+            catch (NumberFormatException e) { sb.append("- Quantity must be a number.\n"); }
         }
-
+        
         checkDate(txtPrescDate.getText().trim(), "Prescription Date", sb);
-        if (!txtIssueDate.getText().trim().isEmpty())
-            checkDate(txtIssueDate.getText().trim(), "Issue Date", sb);
-        if (!txtCollectionDate.getText().trim().isEmpty())
-            checkDate(txtCollectionDate.getText().trim(), "Collection Date", sb);
-
+        if (!txtIssueDate.getText().trim().isEmpty()) checkDate(txtIssueDate.getText().trim(), "Issue Date", sb);
+        if (!txtCollectionDate.getText().trim().isEmpty()) checkDate(txtCollectionDate.getText().trim(), "Collection Date", sb);
+        
         return sb.toString();
     }
 
@@ -456,21 +351,19 @@ public class PrescriptionView extends JPanel {
         sdf.setLenient(false);
         try { sdf.parse(value); }
         catch (ParseException e) {
-            sb.append("- ").append(label)
-              .append(" must be in format ").append(DATE_PATTERN).append(".\n");
+            sb.append("- ").append(label).append(" must be in format ").append(DATE_PATTERN).append(".\n");
         }
     }
 
-    private void clearFormButKeepIds() {
+    private void clearForm() {
         txtPrescDate.setText("");
         txtDosage.setText("");
         txtFrequency.setText("");
         txtDuration.setText("");
         txtQuantity.setText("");
-        cbStatus.setSelectedIndex(0);   // reset
         txtIssueDate.setText("");
         txtCollectionDate.setText("");
         txtInstructions.setText("");
-        // keep dropdown selections and ID
+        cbStatus.setSelectedIndex(0);
     }
 }

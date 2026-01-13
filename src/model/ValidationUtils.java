@@ -38,17 +38,16 @@ public class ValidationUtils {
         }
     }
     
-    // Validate UK phone number (starts with 07, 11 digits)
+    // CHECK THE UK phone number (starts with 07, 11 digits)
     public static boolean isValidPhone(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
             return false;
         }
-        // Remove spaces, dashes, parentheses
         phone = phone.replaceAll("[\\s\\-\\(\\)]", "");
         return phone.matches("07\\d{9}");
     }
     
-    // Validate email format
+  // Check email format 
     public static boolean isValidEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
             return false;
@@ -56,13 +55,13 @@ public class ValidationUtils {
         return email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     }
     
-    // Validate postcode 
+  // Validating the postcode 
     public static boolean isValidPostcode(String postcode) {
         if (postcode == null) return false;
         return postcode.matches("^[A-Z]{1,2}[0-9][A-Z0-9]?\\s?[0-9][A-Z]{2}$");
     }
     
-    // Validate age 
+//Check the age too 
     public static boolean isValidNumber(String number) {
         if (number == null || number.trim().isEmpty()) {
             return false;

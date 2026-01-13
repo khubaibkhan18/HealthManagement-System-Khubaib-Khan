@@ -20,28 +20,26 @@ public class PatientRepository {
         return ids;
     }
 
-    // ============================================================
-    // LOAD PATIENTS FROM CSV (all 14 fields)
-    // ============================================================
+    // LOAD PATIENTS FROM CSV 
     private void load() {
         try {
             for (String[] row : CsvUtils.readCsv(csvPath)) {
 
                 Patient p = new Patient(
-                        row[0],   // patient_id
-                        row[1],   // first_name
-                        row[2],   // last_name
-                        row[3],   // date_of_birth
-                        row[4],   // nhs_number
+                        row[0],   // patient id
+                        row[1],   // firstname
+                        row[2],   // lastname
+                        row[3],   // DOB
+                        row[4],   // nhs number
                         row[5],   // gender
-                        row[6],   // phone_number
+                        row[6],   // phone number
                         row[7],   // email
                         row[8],   // address
                         row[9],   // postcode
-                        row[10],  // emergency_contact_name
-                        row[11],  // emergency_contact_phone
-                        row[12],  // registration_date
-                        row[13]   // gp_surgery_id
+                        row[10],  // emergencycontact name
+                        row[11],  // emergencycontact phone
+                        row[12],  // registration date
+                        row[13]   // gpsurgeryid
                 );
 
                 patients.add(p);
@@ -51,10 +49,6 @@ public class PatientRepository {
             System.err.println("Failed to load patients: " + ex.getMessage());
         }
     }
-
-    // ============================================================
-    // AUTO-ID GENERATOR  (P001 → P002 → P003 → …)
-    // ============================================================
     public String generateNewId() {
 
         int max = 0;
@@ -69,9 +63,7 @@ public class PatientRepository {
         return String.format("P%03d", max + 1);
     }
 
-    // ============================================================
-    // ADD PATIENT + APPEND TO CSV
-    // ============================================================
+    // add and apend 
     public void addAndAppend(Patient p) {
         patients.add(p);
 
@@ -115,9 +107,8 @@ public class PatientRepository {
         return null;
     }
 
-    // ============================================================
-    // FILTERING METHOD FOR PATIENTS
-    // ============================================================
+    // FILTERING PATIENTS
+
     public List<Patient> getPatientsById(String patientId) {
         List<Patient> filtered = new ArrayList<>();
         for (Patient p : patients) {
@@ -127,10 +118,7 @@ public class PatientRepository {
         }
         return filtered;
     }
-
-    // ============================================================
-    // UPDATE PATIENT AND SAVE TO CSV
-    // ============================================================
+    // UPDATE AND SAVE PATIENT TO CSV
     public void update(Patient updatedPatient) {
         for (int i = 0; i < patients.size(); i++) {
             if (patients.get(i).getId().equals(updatedPatient.getId())) {
@@ -141,9 +129,6 @@ public class PatientRepository {
         }
     }
 
-    // ============================================================
-    // WRITE ALL PATIENTS TO CSV
-    // ============================================================
     private void writeAllToCSV() {
         List<String[]> rows = new ArrayList<>();
         for (Patient p : patients) {
