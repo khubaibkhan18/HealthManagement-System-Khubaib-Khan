@@ -69,7 +69,7 @@ public class StatusBarView extends JPanel {
     public void setStatus(String message, String type) {
         switch (type.toLowerCase()) {
             case "success":
-                statusLabel.setForeground(Color.GREEN);
+                statusLabel.setForeground(new Color(34, 139, 34));
                 statusLabel.setText("✓ " + message);
                 break;
             case "error":

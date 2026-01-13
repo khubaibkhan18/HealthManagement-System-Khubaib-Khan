@@ -151,6 +151,19 @@ public class Main {
             MainFrame frame = new MainFrame(pc, cc, ac, prc, rc, user);
             frame.setVisible(true);
             
+            // ================================
+            // WELCOME MESSAGE
+            // ================================
+            JOptionPane.showMessageDialog(frame,
+                "Welcome, " + user.getName() + "!\n" +
+                "Role: " + user.getRole().toUpperCase() + "\n" +
+                "ID: " + user.getId() + "\n\n" +
+                "System loaded successfully.",
+                "Welcome to Healthcare Management System",
+                JOptionPane.INFORMATION_MESSAGE);
+
+            // Update status bar
+            frame.getStatusBar().setStatus("Welcome, " + user.getName() + "!", "success");
 
         } catch (Exception e) {
             System.err.println("Error opening application: " + e.getMessage());
