@@ -1,0 +1,16 @@
+==============================================
+            PRESCRIPTION REPORT               
+==============================================
+Prescription ID: RX004
+Patient: Sarah Brown (P004)
+Clinician: Dr. Helen Roberts GP (C002)
+Date: 2025-09-22
+Medication: GTN Spray
+Dosage: 400mcg | Frequency: As required
+Duration: 30 days | Quantity: 2
+Pharmacy: Boots Pharmacy Birmingham
+Status: PENDING
+Instructions: Use for chest pain episodes
+Generated: 13/01/2026 16:07:11
+----------------------------------------------
+

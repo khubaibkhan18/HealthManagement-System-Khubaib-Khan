@@ -12,7 +12,7 @@ import model.User;
 import view.PrescriptionView;
 import java.util.ArrayList;
 import java.util.List;
-
+import model.PrescriptionManager;
 public class PrescriptionController {
 
     private final PrescriptionRepository repository;
@@ -21,6 +21,7 @@ public class PrescriptionController {
     private final AppointmentRepository appointmentRepository;
     private final PrescriptionView view;
     private final User currentUser;
+    private PrescriptionManager prescriptionManager;
 
     public PrescriptionController(PrescriptionRepository repository,
                                   PatientRepository patientRepository,
@@ -35,6 +36,7 @@ public class PrescriptionController {
         this.appointmentRepository = appointmentRepository;
         this.view = view;
         this.currentUser = user;
+        this.prescriptionManager = PrescriptionManager.getInstance();
 
         view.setController(this);
 
@@ -142,6 +144,19 @@ public class PrescriptionController {
         }
         
         repository.addAndAppend(p);
+        
+        // Generate prescription text file
+        Patient patient = patientRepository.findById(p.getPatientId());
+        Clinician clinician = clinicianRepository.findById(p.getClinicianId());
+        
+        // ADDED NULL CHECK
+        if (patient != null && clinician != null) {
+            prescriptionManager.writePrescriptionText(p, patient, clinician);
+        } else {
+            // Log or handle the error
+            System.err.println("Could not find patient or clinician for prescription " + p.getId());
+        }
+        
         refreshView();
     }
 
