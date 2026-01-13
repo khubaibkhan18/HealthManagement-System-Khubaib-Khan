@@ -15,10 +15,10 @@ public class PatientRepository {
     }
 
     public List<String> getAllIds() {
-    List<String> ids = new ArrayList<>();
-    for (Patient p : patients) ids.add(p.getId());
-    return ids;
-}
+        List<String> ids = new ArrayList<>();
+        for (Patient p : patients) ids.add(p.getId());
+        return ids;
+    }
 
     // ============================================================
     // LOAD PATIENTS FROM CSV (all 14 fields)
@@ -126,5 +126,40 @@ public class PatientRepository {
             }
         }
         return filtered;
+    }
+
+    // ============================================================
+    // UPDATE PATIENT AND SAVE TO CSV
+    // ============================================================
+    public void update(Patient updatedPatient) {
+        for (int i = 0; i < patients.size(); i++) {
+            if (patients.get(i).getId().equals(updatedPatient.getId())) {
+                patients.set(i, updatedPatient);
+                writeAllToCSV();
+                return;
+            }
+        }
+    }
+
+    // ============================================================
+    // WRITE ALL PATIENTS TO CSV
+    // ============================================================
+    private void writeAllToCSV() {
+        List<String[]> rows = new ArrayList<>();
+        for (Patient p : patients) {
+            rows.add(new String[]{
+                    p.getId(), p.getFirstName(), p.getLastName(),
+                    p.getDateOfBirth(), p.getNhsNumber(), p.getGender(),
+                    p.getPhoneNumber(), p.getEmail(), p.getAddress(),
+                    p.getPostcode(), p.getEmergencyContactName(),
+                    p.getEmergencyContactPhone(), p.getRegistrationDate(),
+                    p.getGpSurgeryId()
+            });
+        }
+        try {
+            CsvUtils.writeCsv(csvPath, rows);
+        } catch (IOException ex) {
+            System.err.println("Failed to write patients CSV: " + ex.getMessage());
+        }
     }
 }

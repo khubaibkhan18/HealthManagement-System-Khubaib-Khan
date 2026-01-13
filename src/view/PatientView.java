@@ -25,6 +25,7 @@ public class PatientView extends JPanel {
     
     // Button references
     private JButton btnAdd;
+    private JButton btnUpdate; // ADDED
     private JButton btnDelete;
 
     public PatientView() {
@@ -105,13 +106,16 @@ public class PatientView extends JPanel {
         // BUTTONS (TOP)
         // ============================================================
         btnAdd = new JButton("Add Patient");
+        btnUpdate = new JButton("Update Patient"); // ADD THIS
         btnDelete = new JButton("Delete Selected");
 
         btnAdd.addActionListener(e -> onAdd());
+        btnUpdate.addActionListener(e -> onUpdate()); // ADD THIS
         btnDelete.addActionListener(e -> onDelete());
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
         buttons.add(btnAdd);
+        buttons.add(btnUpdate); // ADD THIS
         buttons.add(btnDelete);
 
         add(buttons, BorderLayout.NORTH);
@@ -149,6 +153,7 @@ public class PatientView extends JPanel {
     private void disableEditingForPatient() {
         // Hide all buttons for patients
         btnAdd.setVisible(false);
+        btnUpdate.setVisible(false); // ADDED
         btnDelete.setVisible(false);
         
         // Disable all form fields for patients (make read-only)
@@ -174,8 +179,9 @@ public class PatientView extends JPanel {
     // DISABLE EDITING FOR CLINICIANS
     // ============================================================
     private void disableEditingForClinician() {
-        // Clinicians cannot add or delete patients
+        // Clinicians cannot add, update or delete patients
         btnAdd.setVisible(false);
+        btnUpdate.setVisible(false); // ADDED
         btnDelete.setVisible(false);
         
         // But they can view patient details (fields remain enabled for viewing)
@@ -208,8 +214,28 @@ public class PatientView extends JPanel {
                 disableEditingForPatient();
             } else if (role.equals("gp") || role.equals("specialist") || role.equals("nurse")) {
                 disableEditingForClinician();
+            } else if (role.equals("staff") || role.equals("admin")) {
+                // Enable editing for staff/admin
+                txtFirstName.setEditable(true);
+                txtLastName.setEditable(true);
+                txtDob.setEditable(true);
+                txtNhs.setEditable(true);
+                txtGender.setEditable(true);
+                txtPhone.setEditable(true);
+                txtEmail.setEditable(true);
+                txtAddress.setEditable(true);
+                txtPostcode.setEditable(true);
+                txtEmergencyName.setEditable(true);
+                txtEmergencyPhone.setEditable(true);
+                txtRegistrationDate.setEditable(true);
+                txtGpSurgery.setEditable(true);
+                
+                // Show all buttons for staff/admin
+                btnAdd.setVisible(true);
+                btnUpdate.setVisible(true);
+                btnDelete.setVisible(true);
+                lblAutoId.setVisible(true);
             }
-            // Staff/admin keep full access
         }
     }
 
@@ -362,5 +388,28 @@ public class PatientView extends JPanel {
                 clearForm(); // Clear form after deletion
             }
         }
+    }
+
+    // ============================================================
+    // UPDATE PATIENT
+    // ============================================================
+    private void onUpdate() {
+        if (controller == null) return;
+        String patientId = lblAutoId.getText();
+        if (patientId.isEmpty()) return;
+        
+        Patient p = new Patient(
+            patientId, txtFirstName.getText(), txtLastName.getText(),
+            txtDob.getText(), txtNhs.getText(), txtGender.getText(),
+            txtPhone.getText(), txtEmail.getText(), txtAddress.getText(),
+            txtPostcode.getText(), txtEmergencyName.getText(),
+            txtEmergencyPhone.getText(), txtRegistrationDate.getText(),
+            txtGpSurgery.getText()
+        );
+        
+        controller.updatePatient(p);
+        
+        // Optional: Clear form after update or keep data
+        // clearForm(); // Uncomment if you want to clear after update
     }
 }

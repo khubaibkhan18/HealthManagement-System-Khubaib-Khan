@@ -117,4 +117,17 @@ public class PatientController {
     public Patient findById(String id) {
         return repository.findById(id);
     }
+
+    // ============================================================
+    // UPDATE PATIENT WITH ROLE-BASED PERMISSIONS
+    // ============================================================
+    public void updatePatient(Patient updatedPatient) {
+        String role = currentUser.getRole();
+        if (role.equals("patient") || role.equals("gp") || 
+            role.equals("specialist") || role.equals("nurse")) {
+            return;
+        }
+        repository.update(updatedPatient);
+        refreshView();
+    }
 }
