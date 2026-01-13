@@ -2,7 +2,7 @@ package view;
 
 import controller.PatientController;
 import model.Patient;
-
+import model.ValidationUtils;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -25,7 +25,7 @@ public class PatientView extends JPanel {
     
     // Button references
     private JButton btnAdd;
-    private JButton btnUpdate; // ADDED
+    private JButton btnUpdate;
     private JButton btnDelete;
 
     public PatientView() {
@@ -106,16 +106,16 @@ public class PatientView extends JPanel {
         // BUTTONS (TOP)
         // ============================================================
         btnAdd = new JButton("Add Patient");
-        btnUpdate = new JButton("Update Patient"); // ADD THIS
+        btnUpdate = new JButton("Update Patient");
         btnDelete = new JButton("Delete Selected");
 
         btnAdd.addActionListener(e -> onAdd());
-        btnUpdate.addActionListener(e -> onUpdate()); // ADD THIS
+        btnUpdate.addActionListener(e -> onUpdate());
         btnDelete.addActionListener(e -> onDelete());
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
         buttons.add(btnAdd);
-        buttons.add(btnUpdate); // ADD THIS
+        buttons.add(btnUpdate);
         buttons.add(btnDelete);
 
         add(buttons, BorderLayout.NORTH);
@@ -153,7 +153,7 @@ public class PatientView extends JPanel {
     private void disableEditingForPatient() {
         // Hide all buttons for patients
         btnAdd.setVisible(false);
-        btnUpdate.setVisible(false); // ADDED
+        btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
         // Disable all form fields for patients (make read-only)
@@ -181,7 +181,7 @@ public class PatientView extends JPanel {
     private void disableEditingForClinician() {
         // Clinicians cannot add, update or delete patients
         btnAdd.setVisible(false);
-        btnUpdate.setVisible(false); // ADDED
+        btnUpdate.setVisible(false);
         btnDelete.setVisible(false);
         
         // But they can view patient details (fields remain enabled for viewing)
@@ -306,11 +306,52 @@ public class PatientView extends JPanel {
     }
 
     // ============================================================
-    // ADD PATIENT
+    // ADD PATIENT WITH VALIDATION
     // ============================================================
     private void onAdd() {
         if (controller == null) return;
 
+        // VALIDATION CHECKS
+        StringBuilder errors = new StringBuilder();
+        
+        // Name validation
+        if (txtFirstName.getText().trim().isEmpty()) {
+            errors.append("- First name is required\n");
+        }
+        if (txtLastName.getText().trim().isEmpty()) {
+            errors.append("- Last name is required\n");
+        }
+        
+        // Date validation
+        if (!ValidationUtils.isValidDate(txtDob.getText(), "yyyy-MM-dd")) {
+            errors.append("- Date of birth must be in YYYY-MM-DD format\n");
+        }
+        
+        // NHS number validation
+        if (!ValidationUtils.isValidNhsNumber(txtNhs.getText())) {
+            errors.append("- NHS number must be 10 digits\n");
+        }
+        
+        // Phone validation
+        if (!ValidationUtils.isValidPhone(txtPhone.getText())) {
+            errors.append("- Phone must start with 07 and be 11 digits\n");
+        }
+        
+        // Email validation
+        if (!ValidationUtils.isValidEmail(txtEmail.getText())) {
+            errors.append("- Invalid email format\n");
+        }
+        
+        // Show errors if any
+        if (errors.length() > 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Please fix the following errors:\n\n" + errors.toString(),
+                "Validation Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // If validation passes, create patient
         Patient p = new Patient(
                 lblAutoId.getText(),
                 txtFirstName.getText(),
@@ -329,8 +370,6 @@ public class PatientView extends JPanel {
         );
 
         controller.addPatient(p);
-        
-        // Clear form after adding
         clearForm();
     }
 
@@ -408,8 +447,5 @@ public class PatientView extends JPanel {
         );
         
         controller.updatePatient(p);
-        
-        // Optional: Clear form after update or keep data
-        // clearForm(); // Uncomment if you want to clear after update
     }
 }

@@ -2,7 +2,7 @@ package view;
 
 import controller.AppointmentController;
 import model.Appointment;
-
+import model.ValidationUtils;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -253,7 +253,7 @@ public class AppointmentView extends JPanel {
     }
 
     // ============================================================
-    // ADD APPOINTMENT
+    // ADD APPOINTMENT WITH VALIDATION
     // ============================================================
     private void addAppointment() {
         // Validate required fields
@@ -284,6 +284,35 @@ public class AppointmentView extends JPanel {
                     JOptionPane.ERROR_MESSAGE);
                 return;
             }
+        }
+
+        // ADDED VALIDATION CHECKS
+        StringBuilder errors = new StringBuilder();
+        
+        // Date validation
+        if (!ValidationUtils.isValidDate(txtDate.getText(), "yyyy-MM-dd") &&
+            !ValidationUtils.isValidDate(txtDate.getText(), "dd/MM/yyyy")) {
+            errors.append("- Appointment date must be in YYYY-MM-DD or DD/MM/YYYY format\n");
+        }
+        
+        // Time validation (HH:mm format)
+        String time = txtTime.getText().trim();
+        if (!time.matches("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$")) {
+            errors.append("- Time must be in HH:MM format (e.g., 09:30)\n");
+        }
+        
+        // Duration validation
+        if (!ValidationUtils.isValidNumber(txtDuration.getText())) {
+            errors.append("- Duration must be a number\n");
+        }
+        
+        // Show errors if any
+        if (errors.length() > 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Please fix the following errors:\n\n" + errors.toString(),
+                "Validation Error", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         Appointment a = new Appointment(
