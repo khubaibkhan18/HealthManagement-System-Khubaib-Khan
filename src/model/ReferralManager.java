@@ -8,8 +8,6 @@ import java.util.List;
 
 public class ReferralManager {
 
-    private static ReferralManager instance;
-
     private final ReferralRepository referralRepository;
     private final PatientRepository patientRepository;
     private final ClinicianRepository clinicianRepository;
@@ -17,12 +15,13 @@ public class ReferralManager {
     private final String referralTextPath;
     private final User currentUser;
 
-    private ReferralManager(ReferralRepository rr,
-                            PatientRepository pr,
-                            ClinicianRepository cr,
-                            FacilityRepository fr,
-                            String referralTextPath,
-                            User user) {
+    // Package-private constructor - use factory method
+    ReferralManager(ReferralRepository rr,
+                   PatientRepository pr,
+                   ClinicianRepository cr,
+                   FacilityRepository fr,
+                   String referralTextPath,
+                   User user) {
 
         this.referralRepository = rr;
         this.patientRepository = pr;
@@ -32,7 +31,7 @@ public class ReferralManager {
         this.currentUser = user;
     }
 
-    public static synchronized ReferralManager getInstance(
+    public static ReferralManager createReferralManager(
             ReferralRepository rr,
             PatientRepository pr,
             ClinicianRepository cr,
@@ -40,10 +39,7 @@ public class ReferralManager {
             String referralTextPath,
             User user) {
 
-        if (instance == null) {
-            instance = new ReferralManager(rr, pr, cr, fr, referralTextPath, user);
-        }
-        return instance;
+        return new ReferralManager(rr, pr, cr, fr, referralTextPath, user);
     }
 
     public void createReferral(Referral r) {
@@ -55,7 +51,6 @@ public class ReferralManager {
         return referralRepository.getAll();
     }
 
- // Filtering patients 
     public List<Referral> getReferralsByPatientId(String patientId) {
         List<Referral> filtered = new ArrayList<>();
         for (Referral r : referralRepository.getAll()) {
@@ -65,19 +60,25 @@ public class ReferralManager {
         }
         return filtered;
     }
-    // delete referral
+
     public void deleteReferral(String referralId) {
         referralRepository.deleteById(referralId);
         rewriteTextFile();
     }
-    // Updating the referral
-    public void updateReferral(Referral updatedReferral) {
 
+    public void updateReferral(Referral updatedReferral) {
         referralRepository.update(updatedReferral);
         rewriteTextFile();
     }
 
-//Write referral to text file showing full details 
+    public Referral findReferralById(String id) {
+        return referralRepository.findById(id);
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
     private void writeReferralText(Referral r) {
         Patient patient = patientRepository.findById(r.getPatientId());
         Clinician referringClinician = clinicianRepository.findById(r.getReferringClinicianId());
@@ -97,6 +98,10 @@ public class ReferralManager {
             bw.write("Referral ID: " + r.getId());
             bw.newLine();
 
+            if (patient != null) {
+                bw.write("Patient: " + patient.getFullName() + " (" + r.getPatientId() + ")");
+                bw.newLine();
+            }
 
             if (referringClinician != null) {
                 bw.write("Referring Clinician: " 
@@ -125,7 +130,7 @@ public class ReferralManager {
                          " (" + referredToFacility.getType() + ")");
                 bw.newLine();
             }
-    // Dates, urgency, reason
+
             bw.write("Referral Date: " + r.getReferralDate());
             bw.newLine();
 
@@ -168,7 +173,7 @@ public class ReferralManager {
 
     private void rewriteTextFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(referralTextPath, false))) {
-            //header
+            // Write header
             bw.write("==============================================\n");
             bw.write("            REFERRAL SUMMARY REPORT           \n");
             bw.write("==============================================\n\n");
@@ -190,6 +195,10 @@ public class ReferralManager {
         Facility referredToFacility = facilityRepository.findById(r.getReferredToFacilityId());
 
         bw.write("Referral ID: " + r.getId() + "\n");
+
+        if (patient != null) {
+            bw.write("Patient: " + patient.getFullName() + " (" + r.getPatientId() + ")\n");
+        }
 
         if (referringClinician != null) {
             bw.write("Referring Clinician: " 

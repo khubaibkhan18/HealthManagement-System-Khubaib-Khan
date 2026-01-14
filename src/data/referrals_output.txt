@@ -200,3 +200,25 @@ Created Date: 12/01/2026
 Last Updated: 12/01/2026
 ----------------------------------------------
 
+==============================================
+            REFERRAL SUMMARY REPORT           
+==============================================
+Referral ID: R014
+Patient: Elizabeth Anderson (P010)
+Referring Clinician: Dr. Helen Roberts GP (Dr. Helen - General Practice)
+Referred To: Sister Mary Kelly Senior Nurse (Sister Mary - General Nursing)
+Referring Facility: Birmingham Central GP Surgery (GP Surgery)
+Referred To Facility: Heartlands Hospital (Hospital)
+Referral Date: 2025-09-13
+Urgency Level: Urgent
+Reason for Referral: Diabetes complications screening
+Requested Service: Diabetic retinal screening|Cardiovascular assessment
+Status: Pending
+Clinical Summary:
+38-year-old female with Type 2 diabetes requiring annual cardiovascular risk assessment. HbA1c slightly elevated.
+Notes:
+Annual diabetes review referral
+Created Date: 2025-09-13
+Last Updated: 14/01/2026
+----------------------------------------------
+

@@ -24,7 +24,7 @@ public class Main {
         loginFrame.setLocationRelativeTo(null);
         loginFrame.setVisible(true);
         
-        // the login button
+        //login buttion
         loginView.getLoginButton().addActionListener(e -> {
             String role = loginView.getSelectedRole();
             String id = loginView.getUserId();
@@ -34,14 +34,14 @@ public class Main {
                 return;
             }
             
-            // Loading repositories
+            //repositories
             PatientRepository patientRepo = new PatientRepository("src/data/patients.csv");
             ClinicianRepository clinicianRepo = new ClinicianRepository("src/data/clinicians.csv");
             StaffRepository staffRepo = new StaffRepository("src/data/staff.csv");
             
             User user = null;
             
-            // Authentication
+        //authenticate
             switch (role.toLowerCase()) {
                 case "patient":
                     user = LoginManager.authenticatePatient(id, patientRepo);
@@ -64,8 +64,8 @@ public class Main {
             
             if (user != null) {
                 System.out.println("Login successful: " + user);
-                loginFrame.dispose(); // close the login window
-                openMainApplication(user); // Open the app
+                loginFrame.dispose(); //close windpw
+                openMainApplication(user);
             } else {
                 loginView.showError("Invalid ID: " + id + 
                     "\n\nTry these IDs:\n• Patient: P001\n• GP: C001\n• Specialist: C005\n• Nurse: C009\n• Staff: ST001\n• Admin: ADM001");
@@ -84,30 +84,23 @@ public class Main {
             AppointmentRepository ar = new AppointmentRepository("src/data/appointments.csv");
             PrescriptionRepository pResR = new PrescriptionRepository("src/data/prescriptions.csv");
             ReferralRepository rR = new ReferralRepository("src/data/referrals.csv");
-
-
-            // REFERRAL MANAGER
-            ReferralManager rm = ReferralManager.getInstance(
+            ReferralManager rm = ReferralManager.createReferralManager(
                     rR, pr, cr, fr,
                     "src/data/referrals_output.txt", user
             );
-
             // VIEWS
             PatientView pv = new PatientView();
             ClinicianView cv = new ClinicianView();
             AppointmentView av = new AppointmentView();
             PrescriptionView presV = new PrescriptionView();
             ReferralView rv = new ReferralView();
-
             // CONTROLLERS
-
             PatientController pc = new PatientController(
                     pr,   // PatientRepository
                     ar,   // AppointmentRepository 
                     pv,   // PatientView
                     user  // Current User
             );
-
             ClinicianController cc = new ClinicianController(cr, cv, user);
 
             AppointmentController ac = new AppointmentController(
@@ -141,8 +134,8 @@ public class Main {
             // MAIN FRAME
             MainFrame frame = new MainFrame(pc, cc, ac, prc, rc, user);
             frame.setVisible(true);
-            
-            // THE WELCOME MESSAGE
+           
+          //welcome 
             JOptionPane.showMessageDialog(frame,
                 "Welcome, " + user.getName() + "!\n" +
                 "Role: " + user.getRole().toUpperCase() + "\n" +
